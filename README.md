@@ -126,4 +126,4 @@ If Studionet or local Studio state is reset, redeploy the same reviewed source a
 - The contract is intentionally frozen. Corrections require a reviewed fresh deployment and address update.
 - AI verdict quality depends on the clarity of the mandate and proposal text; `AMBIGUOUS` fails closed.
 - The production JavaScript bundle is about 781 kB before gzip (about 186 kB gzip); Vite reports a non-blocking chunk-size warning.
-- User-executed wallet E2E evidence remains pending until the mandatory final web test is completed.
+- Live Vercel E2E with OKX Wallet passed the compliant, denied, authorization-failure, owner-revocation, reload-disconnected, and authoritative-readback paths; see `docs/VERIFICATION.md`.

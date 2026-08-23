@@ -49,9 +49,23 @@ Every successful write below reached `FINALIZED`, consensus accepted, GenVM exec
 
 Final readback: mandate count 1, capability count 2, audit count 8; capability 0 is `USED`, capability 1 is `DENIED`, and mandate 0 is `REVOKED`.
 
-## Wallet and web acceptance boundary
+## Vercel wallet E2E (OKX Wallet)
 
-The final release must be configured with the exact contract above. The mandatory user-executed Vercel E2E uses a fresh, independent MetaMask, OKX Wallet, or Rabby account that is not any Studio deployer/test account. Every consequential web write must be verified by transaction hash for actor, target contract/method, `FINALIZED`, execution `SUCCESS`, and post-transaction readback. This section is not marked complete until that exact final Vercel release passes.
+Executed on 2026-08-23 against the live URL above with independent owner `0x00870443049cb1d4a9a0f51913885433c701e01f` and delegate `0x7885536194bbd6e1d0a6ab991ab215cfa9542339`. Successful writes reached `FINALIZED`, execution `SUCCESS`, and authoritative readback.
+
+| Case | Transaction | Result |
+|---|---|---|
+| Create mandate 1 | [`0xd653…0140`](https://explorer-studio.genlayer.com/tx/0xd65368d590f97cafc838fdfbb50e2b4fc8904d9c3fb1465c38295348c5d70140) | `ACTIVE`; exact owner, delegate, policy, exclusions and hash |
+| Submit compliant capability 2 | [`0xf200…1a62`](https://explorer-studio.genlayer.com/tx/0xf2002b70297453c3abe297198927d9b09d458a5f249a79a75937eb0713ed1a62) | returned ID 2; `PENDING` |
+| Evaluate capability 2 | [`0x3012…cee4`](https://explorer-studio.genlayer.com/tx/0x3012e66cd4f07a17dadc5f850c7f0d5129176950f3db02dd5400c2a0554bcee4) | `GRANTED`, `WITHIN_MANDATE` |
+| Record intent | [`0x8921…e1a7`](https://explorer-studio.genlayer.com/tx/0x8921f1dc81220a4ca1393903a194b9bcb45c79ba1b12939309125d85a6fce1a7) | exact intent persisted |
+| Use capability 2 | [`0xe36b…1ac0`](https://explorer-studio.genlayer.com/tx/0xe36b2cfe6a935969eb6cd282faf1387e1be4c70612acd03616b22eb4c48c1ac0) | `USED`; proof note persisted |
+| Submit excluded capability 3 | [`0xbfd4…dc37`](https://explorer-studio.genlayer.com/tx/0xbfd4bcc9ea51c9ee27ba45984c764e0bd22d580a77d7c48ab890bbcd5f69dc37) | returned ID 3; `PENDING` |
+| Evaluate capability 3 | [`0x91e0…ac03`](https://explorer-studio.genlayer.com/tx/0x91e0abdc59738fafd1d10ddc67a40494157354e65b29f0a7d80237838352ac03) | `DENIED`, `OUTSIDE_MANDATE` |
+| Delegate attempts revoke | [`0x8f88…ae3d`](https://explorer-studio.genlayer.com/tx/0x8f88fab521f3c6703d5a93b457e979b1a59cb62b714ae2e926dcb37d6eebae3d) | expected execution failure; mandate remained `ACTIVE`; no audit append |
+| Owner revokes mandate 1 | [`0x3d54…6f13`](https://explorer-studio.genlayer.com/tx/0x3d54c525df0d467166ea6ea301beca81f105a375183fdf52087596769acf6f13) | `REVOKED`; exact reason/time persisted |
+
+Reload returned the UI to disconnected. Reconnecting OKX preserved readback: mandate 1 `REVOKED`, capability 2 `USED`, capability 3 `DENIED`, and audit entries 8–15 form the expected append-only sequence.
 
 ## Recovery
 
@@ -63,4 +77,4 @@ Because the contract is intentionally frozen, source corrections, account loss, 
 - The intentionally frozen contract cannot be upgraded in place.
 - Natural-language evaluation can return `AMBIGUOUS`; this fails closed.
 - Vite reports a non-blocking chunk-size warning for the current single-page bundle.
-- Final GitHub, Vercel, and user web-E2E evidence are checkpoint-specific and cannot be replaced by these local or Studio results.
+- Final anonymous `POST_GITHUB_VERCEL_FINAL` approval remains required for the exact release revision.
