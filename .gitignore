@@ -15,8 +15,12 @@ node_modules/
 frontend/node_modules/
 dist/
 frontend/dist/
+.vercel/
 *.local
 .env
+.env.*
+!.env.example
+!frontend/.env.example
 frontend/.env
 *.log
 npm-debug.log*
