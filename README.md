@@ -49,7 +49,7 @@ The chain is the source of truth. The browser stores no durable wallet session a
 
 - Actors: mandate owner, named delegate, and public readers.
 - Mandate states: `ACTIVE` → `REVOKED`; expiry is derived from the stored UTC timestamp.
-- Capability states: `PENDING` → `GRANTED` / `DENIED`, then `GRANTED` → `INTENT_RECORDED` → `USED`.
+- Capability states: `PENDING` → `GRANTED` / `DENIED`; `record_intent` appends an `INTENT_RECORDED` audit event while status remains `GRANTED`, then use transitions `GRANTED` → `USED`.
 - Core writes: `create_mandate`, `submit_proposal`, `evaluate_capability`, `record_intent`, `use_capability`, `revoke_mandate`.
 - Core reads: mandate/capability/audit getters and counts.
 - AI equivalence is constrained to a canonical JSON decision schema and fixed verdict/condition categories.

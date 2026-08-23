@@ -38,12 +38,12 @@ Every successful write below reached `FINALIZED`, consensus accepted, GenVM exec
 | Case | Actor | Method and expected proof | Transaction | Authoritative result |
 |---|---|---|---|---|
 | Create mandate | owner | `create_mandate`; create active mandate 0 | [`0xb53c…e192`](https://explorer-studio.genlayer.com/tx/0xb53c683d5c2f55c04e78368d99feb7316e245af2de9b0f9a9f37f9b7d1fbe192) | mandate 0 `ACTIVE`; count 1; owner/delegate/policy/exclusions match |
-| Submit compliant proposal | owner | `submit_proposal`; create capability 0 | [`0x93fc…116a`](https://explorer-studio.genlayer.com/tx/0x93fc7be4b538381329372b0a9dfdc47ed32618c2de8404679f3e3381ab9a116a) | capability 0 created for mandate 0 |
-| Evaluate compliant proposal | owner | `evaluate_capability`; grant within mandate | [`0xac44…d051`](https://explorer-studio.genlayer.com/tx/0xac4437622d3ade90bff46cfbfaceea96f59e975ee3ab1ec43e787b187402d051) | `GRANTED`, `WITHIN_MANDATE` |
+| Submit compliant proposal | delegate | `submit_proposal`; create capability 0 | [`0x93fc…116a`](https://explorer-studio.genlayer.com/tx/0x93fc7be4b538381329372b0a9dfdc47ed32618c2de8404679f3e3381ab9a116a) | capability 0 created for mandate 0 |
+| Evaluate compliant proposal | delegate | `evaluate_capability`; grant within mandate | [`0xac44…d051`](https://explorer-studio.genlayer.com/tx/0xac4437622d3ade90bff46cfbfaceea96f59e975ee3ab1ec43e787b187402d051) | `GRANTED`, `WITHIN_MANDATE` |
 | Record delegate intent | delegate | `record_intent(0, …)` | [`0x3ac5…63eb`](https://explorer-studio.genlayer.com/tx/0x3ac5aeb03bacfeb870738e3780cc632feb8c601f9e305b544ebdff632bc563eb) | audit index 3 `INTENT_RECORDED`; exact delegate and intent persisted |
 | Record capability use | delegate | `use_capability(0, …)` | [`0xb918…0a32`](https://explorer-studio.genlayer.com/tx/0xb918ef4a70bd4f5b641f97ac17e3c380b0338d7cc833aac225226c59da320a32) | capability 0 `USED`; intent and use note preserved |
-| Submit excluded proposal | owner | `submit_proposal`; create capability 1 | [`0x29ed…c2ac`](https://explorer-studio.genlayer.com/tx/0x29edbb6c5b01be6ba669fa2d4497d50bd2166c019deeffbd38ca061e0c8ec2ac) | capability 1 created for mandate 0 |
-| Evaluate excluded proposal | owner | `evaluate_capability`; deny exclusions | [`0x237f…5e45`](https://explorer-studio.genlayer.com/tx/0x237f3e177efac68afe6787d8aaa860b06f1f4a2fd320dc3d3d633da07bf85e45) | `DENIED`, `OUTSIDE_MANDATE`; token-sale and validator-compensation exclusions cited |
+| Submit excluded proposal | delegate | `submit_proposal`; create capability 1 | [`0x29ed…c2ac`](https://explorer-studio.genlayer.com/tx/0x29edbb6c5b01be6ba669fa2d4497d50bd2166c019deeffbd38ca061e0c8ec2ac) | capability 1 created for mandate 0 |
+| Evaluate excluded proposal | delegate | `evaluate_capability`; deny exclusions | [`0x237f…5e45`](https://explorer-studio.genlayer.com/tx/0x237f3e177efac68afe6787d8aaa860b06f1f4a2fd320dc3d3d633da07bf85e45) | `DENIED`, `OUTSIDE_MANDATE`; token-sale and validator-compensation exclusions cited |
 | Reject unauthorized revocation | delegate | `revoke_mandate`; no owner authority | [`0x8ab3…8abb`](https://explorer-studio.genlayer.com/tx/0x8ab30b60294e45a4db7cf1ca5494df67f660557d4631bee96d302b0c634d8abb) | `UNAUTHORIZED_NOT_OWNER`; mandate remains `ACTIVE`; no audit append |
 | Owner revokes mandate | owner | `revoke_mandate`; close authority | [`0x4339…9176`](https://explorer-studio.genlayer.com/tx/0x433939732f4ba682d8a2fc034dd36a6f6a40bafa32fdc661fb36d0cafac69176) | mandate 0 `REVOKED`; reason/time persisted |
 
@@ -66,6 +66,19 @@ Executed on 2026-08-23 against the live URL above with independent owner `0x0087
 | Owner revokes mandate 1 | [`0x3d54…6f13`](https://explorer-studio.genlayer.com/tx/0x3d54c525df0d467166ea6ea301beca81f105a375183fdf52087596769acf6f13) | `REVOKED`; exact reason/time persisted |
 
 Reload returned the UI to disconnected. Reconnecting OKX preserved readback: mandate 1 `REVOKED`, capability 2 `USED`, capability 3 `DENIED`, and audit entries 8–15 form the expected append-only sequence.
+
+## GenLayer submission category and scorecard
+
+Category: `PROJECT`. Validity gate: `PASS`.
+
+| Axis | Score | Exact evidence | Remaining weakness |
+|---|---:|---|---|
+| GenLayer fit | 4/5 | GenLayer consensus makes the central mandate-vs-proposal decision; live capability 2 was granted and capability 3 denied with distinct validator reasoning and on-chain consequences. | Natural-language quality depends on mandate clarity; `AMBIGUOUS` fails closed. |
+| Contract quality | 4/5 | Immutable owner/delegate authorization, pinned mandate hash, explicit lifecycle, exclusion-aware AI evaluation, append-only audit, rejected unauthorized revoke, and 18 Direct Mode tests. | Intentionally frozen; corrections require reviewed redeployment. |
+| Engineering | 4/5 | Exact source/deployment hash binding, 92 frontend tests, production build, zero production vulnerabilities, transaction finality/execution/readback classifier, reproducible verification and recovery documentation. | The production bundle retains a disclosed size warning. |
+| Frontend / UX | 4/5 | Live OKX E2E covered create, grant, intent, use, deny, authorization failure, owner revoke, reload-disconnected, reconnect/readback and audit; EIP-6963 chooser supports MetaMask, OKX and Rabby. | Injected-wallet availability and Studionet health remain external dependencies. |
+
+Overall evidence-based assessment: strong, complete end-to-end GenLayer governance product with reviewer-verifiable positive, negative, authorization and recovery boundaries. Submission recommendation: `READY`, subject to matching primary and anonymous final approval for this exact revision.
 
 ## Recovery
 
