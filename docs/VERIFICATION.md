@@ -15,7 +15,7 @@ This document binds the public project to the exact Studionet deployment and the
 | Constructor arguments | none |
 | Deployment execution | `FINALIZED`, consensus accepted, execution `SUCCESS` |
 | Classification | `INTENTIONALLY_FROZEN` |
-| Live web | pending the locked-target Vercel deployment |
+| Live web | [dao-delegate-mandate-guard.vercel.app](https://dao-delegate-mandate-guard.vercel.app) |
 
 The deployed Studio source and `contracts/dao_delegate_mandate_guard.py` at the deployed-source commit have the same canonical-LF SHA-256 shown above. No upgrade path or upgrader address is claimed.
 

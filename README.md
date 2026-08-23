@@ -6,7 +6,7 @@ DAO Delegate Mandate Guard turns a human-readable delegation policy into an audi
 
 - Studionet contract: [`0x0366737fedfe950b7Baa3D9e05F439a591809a20`](https://explorer-studio.genlayer.com/address/0x0366737fedfe950b7Baa3D9e05F439a591809a20)
 - Deployment transaction: [`0x6390…c2cf`](https://explorer-studio.genlayer.com/tx/0x6390e98018e1616950bfa493a3167a311f5b67a01cd10b153e94ba77c2a4c2cf)
-- Live app: pending the locked-target Vercel deployment
+- Live app: [dao-delegate-mandate-guard.vercel.app](https://dao-delegate-mandate-guard.vercel.app)
 - Detailed evidence: [docs/VERIFICATION.md](docs/VERIFICATION.md)
 
 ## Trust problem
@@ -126,4 +126,4 @@ If Studionet or local Studio state is reset, redeploy the same reviewed source a
 - The contract is intentionally frozen. Corrections require a reviewed fresh deployment and address update.
 - AI verdict quality depends on the clarity of the mandate and proposal text; `AMBIGUOUS` fails closed.
 - The production JavaScript bundle is about 781 kB before gzip (about 186 kB gzip); Vite reports a non-blocking chunk-size warning.
-- The live Vercel URL and user-executed wallet E2E evidence are added only after deployment and completion of the mandatory final web test.
+- User-executed wallet E2E evidence remains pending until the mandatory final web test is completed.
