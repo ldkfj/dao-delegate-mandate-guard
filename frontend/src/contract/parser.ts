@@ -249,63 +249,61 @@ export function parseReturnedIdFromTransaction(tx: Record<string, any>): string 
     throw new Error('RECONCILIATION_REQUIRED: Transaction data missing or invalid');
   }
 
-  // 1. Direct return value if present in SDK result
-  if (tx.returnValue !== undefined && tx.returnValue !== null) {
-    const val = typeof tx.returnValue === 'bigint' ? tx.returnValue.toString() : String(tx.returnValue).trim();
-    if (val !== '' && val !== 'undefined' && val !== 'null') {
-      return val;
+  const parseId = (value: unknown): string | null => {
+    if (typeof value === 'bigint') return value >= 0n ? value.toString() : null;
+    if (typeof value === 'number') {
+      return Number.isSafeInteger(value) && value >= 0 ? String(value) : null;
     }
-  }
+    if (typeof value !== 'string') return null;
+
+    let candidate = value.trim();
+    if (!candidate) return null;
+    try {
+      const decoded = JSON.parse(candidate);
+      if (typeof decoded === 'string' || typeof decoded === 'number') {
+        candidate = String(decoded).trim();
+      }
+    } catch {
+      // Plain decimal string.
+    }
+    return /^(0|[1-9]\d*)$/.test(candidate) ? candidate : null;
+  };
+
+  const parseExecutionReturn = (value: unknown): string | null => {
+    const direct = parseId(value);
+    if (direct !== null) return direct;
+    if (!value || typeof value !== 'object') return null;
+
+    const result = value as Record<string, any>;
+    if (result.status && String(result.status).toLowerCase() !== 'return') return null;
+    return parseId(result.payload?.readable ?? result.readable);
+  };
+
+  // 1. Direct return value if present in SDK result
+  const directReturn = parseId(tx.returnValue);
+  if (directReturn !== null) return directReturn;
 
   // 2. Check leader_receipt in consensus_data
   const leaderReceipts = tx.consensus_data?.leader_receipt;
   if (Array.isArray(leaderReceipts) && leaderReceipts.length > 0) {
     const leader = leaderReceipts[0];
-    if (leader && leader.result !== undefined && leader.result !== null && leader.result !== '') {
-      let rawResult = leader.result;
-      if (typeof rawResult === 'string') {
-        try {
-          const parsed = JSON.parse(rawResult);
-          if (parsed !== undefined && parsed !== null) {
-            rawResult = parsed;
-          }
-        } catch {
-          // Keep raw string
-        }
-      }
-      const val = typeof rawResult === 'bigint' ? rawResult.toString() : String(rawResult).trim();
-      if (val !== '' && val !== 'undefined' && val !== 'null' && val !== '[object Object]') {
-        return val;
-      }
-    }
+    const leaderReturn = parseExecutionReturn(leader?.result);
+    if (leaderReturn !== null) return leaderReturn;
   }
 
-  // 3. Check direct result
-  if (tx.result !== undefined && tx.result !== null) {
-    if (typeof tx.result === 'string' || typeof tx.result === 'number' || typeof tx.result === 'bigint') {
-      const val = String(tx.result).trim();
-      if (val !== '' && val !== 'undefined' && val !== 'null') {
-        return val;
-      }
-    }
-  }
+  // tx.result is transaction-result metadata in genlayer-js, never a contract return value.
 
-  // 4. Check return_data
-  if (tx.return_data !== undefined && tx.return_data !== null) {
-    const val = typeof tx.return_data === 'bigint' ? tx.return_data.toString() : String(tx.return_data).trim();
-    if (val !== '' && val !== 'undefined' && val !== 'null') {
-      return val;
-    }
-  }
+  // 3. Check return_data
+  const returnData = Array.isArray(tx.return_data) && tx.return_data.length === 1
+    ? tx.return_data[0]
+    : tx.return_data;
+  const parsedReturnData = parseExecutionReturn(returnData);
+  if (parsedReturnData !== null) return parsedReturnData;
 
-  // 5. Check data.returnValue or data.result
+  // 4. Check nested SDK return fields
   if (tx.data && typeof tx.data === 'object') {
-    if (tx.data.returnValue !== undefined && tx.data.returnValue !== null) {
-      return String(tx.data.returnValue).trim();
-    }
-    if (tx.data.result !== undefined && tx.data.result !== null && typeof tx.data.result !== 'object') {
-      return String(tx.data.result).trim();
-    }
+    const nested = parseId(tx.data.returnValue) ?? parseExecutionReturn(tx.data.result);
+    if (nested !== null) return nested;
   }
 
   throw new Error('RECONCILIATION_REQUIRED: Unable to extract returned ID from transaction receipt');

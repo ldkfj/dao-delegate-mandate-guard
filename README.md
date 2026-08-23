@@ -88,7 +88,7 @@ Verified on 2026-08-23:
 
 cd frontend
 corepack.cmd pnpm test run --reporter=dot
-# 4 files, 91 tests passed
+# 4 files, 92 tests passed
 
 corepack.cmd pnpm build
 # TypeScript and Vite production build passed

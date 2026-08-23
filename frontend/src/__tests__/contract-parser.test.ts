@@ -202,9 +202,28 @@ describe('Contract Parser & Configuration Validation', () => {
       expect(parseReturnedIdFromTransaction(tx)).toBe('23');
     });
 
-    it('extracts ID from direct result field', () => {
-      const tx = { result: '99' };
-      expect(parseReturnedIdFromTransaction(tx)).toBe('99');
+    it('decodes the live Studionet SDK execution envelope before transaction metadata', () => {
+      const tx = {
+        result: 6,
+        consensus_data: {
+          leader_receipt: [
+            {
+              result: {
+                raw: 'AAk=',
+                status: 'return',
+                payload: { raw: [9], readable: '1' },
+              },
+            },
+          ],
+        },
+      };
+      expect(parseReturnedIdFromTransaction(tx)).toBe('1');
+    });
+
+    it('rejects top-level transaction result metadata as an entity ID', () => {
+      expect(() => parseReturnedIdFromTransaction({ result: 6 })).toThrow(
+        'RECONCILIATION_REQUIRED'
+      );
     });
 
     it('extracts ID from return_data array', () => {

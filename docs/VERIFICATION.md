@@ -26,7 +26,7 @@ Verified 2026-08-23:
 | Check | Command | Result |
 |---|---|---|
 | Contract direct tests | `.\.venv\Scripts\python.exe -m pytest tests\direct -q` | `18 passed` |
-| Frontend tests | `corepack.cmd pnpm test run --reporter=dot` from `frontend` | `4 files; 91 passed` |
+| Frontend tests | `corepack.cmd pnpm test run --reporter=dot` from `frontend` | `4 files; 92 passed` |
 | Production build/typecheck | `corepack.cmd pnpm build` from `frontend` | PASS |
 | Production dependency audit | `corepack.cmd pnpm audit --prod` from `frontend` | no known vulnerabilities |
 | Local governance gate audit | `audit-genlayer-project-gates.ps1 -ProjectName dao-delegate-mandate-guard` | PASS |
