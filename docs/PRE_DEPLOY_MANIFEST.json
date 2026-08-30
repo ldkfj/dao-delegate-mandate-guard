@@ -46,6 +46,7 @@
     "frontend_tests": "4 files; 92 passed",
     "frontend_build": "PASS",
     "production_dependency_audit": "no known vulnerabilities",
+    "exact_source_schema_probe": "PASS: 12 methods; 6 views; 6 writes; 0 constructor parameters; see PRE_DEPLOY_SCHEMA_PROBE.json",
     "changed_api": "submit_proposal canonical Snapshot binding; use_capability(u256)"
   },
   "recovery_plan": [

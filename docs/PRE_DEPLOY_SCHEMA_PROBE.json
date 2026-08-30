@@ -1,0 +1,41 @@
+{
+  "checkpoint": "PRE_DEPLOY",
+  "revision": "7169b927bc3074a538b703058e8309589015f93e",
+  "contract_source_path": "contracts/dao_delegate_mandate_guard.py",
+  "contract_source_sha256_canonical_lf_utf8": "EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A",
+  "probe_command": "genvm-lint check contracts/dao_delegate_mandate_guard.py --json",
+  "probe_result": {
+    "ok": true,
+    "lint": {"ok": true, "passed": 3},
+    "validate": {
+      "ok": true,
+      "contract": "DaoDelegateMandateGuard",
+      "methods": 12,
+      "view_methods": 6,
+      "write_methods": 6,
+      "ctor_params": 0
+    }
+  },
+  "public_api_ast_cross_check": {
+    "constructor": "__init__(self)",
+    "writes": [
+      "create_mandate(self, delegate: Address, policy_uri: str, policy_text: str, exclusions_text: str, expires_at: str) -> u256",
+      "submit_proposal(self, mandate_id: u256, proposal_url: str, proposal_title: str, proposal_text: str) -> u256",
+      "evaluate_capability(self, capability_id: u256) -> None",
+      "record_intent(self, capability_id: u256, intent_text: str) -> None",
+      "use_capability(self, capability_id: u256) -> None",
+      "revoke_mandate(self, mandate_id: u256, reason: str) -> None"
+    ],
+    "views": [
+      "get_mandate(self, mandate_id: u256) -> str",
+      "get_capability(self, capability_id: u256) -> str",
+      "get_audit_count(self) -> u256",
+      "get_audit_entry(self, index: u256) -> str",
+      "get_mandate_count(self) -> u256",
+      "get_capability_count(self) -> u256"
+    ]
+  },
+  "constructor_arguments": [],
+  "schema_scope": "Exact source only; no deployment or contract write performed.",
+  "warning": "I200 newer runner available; informational only and does not invalidate the passing current installed-runtime schema probe."
+}
