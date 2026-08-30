@@ -38,8 +38,8 @@
   "live_web": {
     "status": "DEPLOYED",
     "url": "https://dao-delegate-mandate-guard.vercel.app",
-    "vercel_deployment": "dpl_Ddha4zHZKh2Mgasi92ys9zTZKSDP",
-    "vercel_inspector_url": "https://vercel.com/gam9/dao-delegate-mandate-guard/Ddha4zHZKh2Mgasi92ys9zTZKSDP",
+    "vercel_deployment": "dpl_23ZqzsUus6hwcp3Ep7TPZVYMFxAp",
+    "vercel_inspector_url": "https://vercel.com/gam9/dao-delegate-mandate-guard/23ZqzsUus6hwcp3Ep7TPZVYMFxAp",
     "deployment_alias_verified": true,
     "built_from_revision": "RESOLVED_FROM_GIT_HEAD",
     "build_revision_resolution_command": "git rev-parse HEAD",
@@ -53,10 +53,26 @@
       "reload_disconnected_verified": true
     },
     "wallet_e2e": {
-      "status": "BLOCKED_ENVIRONMENT",
+      "status": "PASS",
+      "browser": "Google Chrome",
       "wallet": "OKX Wallet",
-      "reason": "Codex in-app browser exposed no supported injected wallet provider",
-      "signatures_or_transactions_claimed": false
+      "account": "0x00870443049cb1d4a9a0f51913885433c701e01f",
+      "account_is_separate_from_studio_deployer": true,
+      "chain": "0xF22F",
+      "create_mandate": {
+        "hash": "0x362b3716207c8990086a2b87cb7af902a59a150f2029dbfcb78c169d27d493d6",
+        "returned_mandate_id": 2,
+        "lifecycle": "READBACK_CONFIRMED",
+        "readback": "ACTIVE; owner is the connected account; delegate is 0x1111111111111111111111111111111111111111"
+      },
+      "revoke_mandate": {
+        "hash": "0xcdd447bf2af47c90869742883a643f75d118e50bcc5a804ebc4b3d63f2d98b63",
+        "lifecycle": "READBACK_CONFIRMED",
+        "readback": "REVOKED; revocation reason retained"
+      },
+      "disconnect_after_use": true,
+      "reload_disconnected": true,
+      "signatures_or_transactions_claimed": true
     }
   },
   "prior_deployment_reuse": false,

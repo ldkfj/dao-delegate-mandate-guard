@@ -20,7 +20,7 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 | Contract | `0xC500A12309784a75367FC53aCfa54c0F231A26d1` |
 | Deployment transaction | `0xaa725f836c3b7aaee1970a9db889efae979552c7ebcd890a3d3bbcd994684632` (`FINALIZED` / `SUCCESS`) |
 | Deployment creator | `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902` (locked deployer) |
-| Vercel release | [production URL](https://dao-delegate-mandate-guard.vercel.app), deployment `dpl_Ddha4zHZKh2Mgasi92ys9zTZKSDP`, READY |
+| Vercel release | [production URL](https://dao-delegate-mandate-guard.vercel.app), deployment `dpl_23ZqzsUus6hwcp3Ep7TPZVYMFxAp`, READY |
 
 ## Judge-requested correction
 
@@ -95,12 +95,20 @@ The old deployment and old Vercel transaction ledger must not be reused for this
 ### Production Vercel smoke evidence
 
 The production alias is [dao-delegate-mandate-guard.vercel.app](https://dao-delegate-mandate-guard.vercel.app)
-and was built from exact revision `93bfe68d6e9fa97ebf66dabbaff4a9cdea1f8c69`. Read-only verification in the
+and the current READY deployment is `dpl_23ZqzsUus6hwcp3Ep7TPZVYMFxAp`. Read-only verification in the
 Codex In-app Browser passed: the header shows contract `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, the
 footer shows Studionet `0xF22F`, the authoritative audit view loads 10 entries, the `CAPABILITY_USED`
-filter isolates the expected entry, and the page remains disconnected after reload. The OKX wallet E2E is
-not claimed: this browser session exposed no supported injected wallet provider, so no wallet signature or
-transaction was performed in this smoke run.
+filter isolates the expected entry, and the page remains disconnected after reload.
+
+The AI-controlled Chrome E2E owner journey also passed with separate OKX account
+`0x00870443049cb1d4a9a0f51913885433c701e01f`: `create_mandate` hash
+`0x362b3716207c8990086a2b87cb7af902a59a150f2029dbfcb78c169d27d493d6` reached
+`READBACK_CONFIRMED` and returned mandate #2, whose authoritative readback was `ACTIVE`; `revoke_mandate`
+hash `0xcdd447bf2af47c90869742883a643f75d118e50bcc5a804ebc4b3d63f2d98b63` reached
+`READBACK_CONFIRMED` and the readback became `REVOKED`. The UI retained Explorer links for both hashes.
+Manual disconnect and full reload both returned to disconnected state. Delegate proposal/evaluation/use,
+canonical Snapshot binding, and the non-final governance-action rejection remain bound to the fresh
+Studionet matrix above; no extra delegate signature was fabricated for this owner-only wallet run.
 
 ## Recovery
 
