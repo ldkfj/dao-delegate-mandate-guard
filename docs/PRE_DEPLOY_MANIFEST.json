@@ -1,0 +1,60 @@
+{
+  "task": "DAO Delegate Mandate Guard",
+  "project_slug": "dao-delegate-mandate-guard",
+  "project_folder": "E:\\Genlayer-Projects\\dao-delegate-mandate-guard",
+  "submission_category": "PROJECT",
+  "independent_task": true,
+  "checkpoint": "PRE_DEPLOY",
+  "revision": "cd77e2c7655bed7bb4955cd67cb48811a687e3ae",
+  "contract_source_path": "contracts/dao_delegate_mandate_guard.py",
+  "contract_source_sha256_canonical_lf_utf8": "EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A",
+  "frontend_revision": "cd77e2c7655bed7bb4955cd67cb48811a687e3ae",
+  "network": {
+    "name": "GenLayer Studionet",
+    "chain_id_decimal": 61999,
+    "chain_id_hex": "0xF22F",
+    "rpc": "https://studio.genlayer.com/api",
+    "explorer": "https://explorer-studio.genlayer.com"
+  },
+  "locked_studio_account": {
+    "address": "0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902",
+    "role": "deployer",
+    "address_format": "20-byte EVM address",
+    "read_only_selected_and_accessible": true
+  },
+  "constructor_arguments": [],
+  "contract_classification": "INTENTIONALLY_FROZEN",
+  "deployment": {
+    "status": "NOT_STARTED",
+    "contract_address": "",
+    "deployment_transaction": "",
+    "explorer_contract_url": "",
+    "source_parity": "",
+    "finality": "",
+    "execution": ""
+  },
+  "live_web": {
+    "status": "NOT_DEPLOYED",
+    "url": "",
+    "vercel_deployment": ""
+  },
+  "prior_deployment_reuse": false,
+  "prior_evidence_reuse": false,
+  "required_local_verification": {
+    "contract_direct_tests": "20 passed",
+    "genvm_lint": "PASS",
+    "frontend_tests": "4 files; 92 passed",
+    "frontend_build": "PASS",
+    "production_dependency_audit": "no known vulnerabilities",
+    "changed_api": "submit_proposal canonical Snapshot binding; use_capability(u256)"
+  },
+  "recovery_plan": [
+    "If the locked account is unavailable, select and record another accessible valid 20-byte Studionet account before any signature; invalidate this package and obtain fresh PRE_DEPLOY review.",
+    "If Studio UI or local state resets, preserve this source revision and canonical hash, reselect the account, repeat read-only schema checks, and obtain fresh review if any bound field changes.",
+    "If Studionet resets, treat the contract address and all live evidence as invalid, deploy a fresh immutable instance from this exact reviewed source, then rerun the full Studio matrix and later reviews.",
+    "Never reuse another Task's address, deployment transaction, wallet export, private key, environment variable, or evidence."
+  ],
+  "secret_handling": "No private keys, wallet exports, credentials, or secrets are stored or submitted.",
+  "material_change_rule": "Any source, revision, source hash, network, account, constructor, classification, deployment, frontend, or evidence change invalidates this PRE_DEPLOY package and requires fresh review.",
+  "deployment_authorization_state": "No signature, deployment transaction, or contract write has occurred for this revision."
+}

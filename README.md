@@ -5,6 +5,7 @@ DAO Delegate Mandate Guard turns a human-readable delegation policy into an audi
 ## Verified links
 
 - Detailed evidence: [docs/VERIFICATION.md](docs/VERIFICATION.md)
+- PRE_DEPLOY manifest: [docs/PRE_DEPLOY_MANIFEST.json](docs/PRE_DEPLOY_MANIFEST.json)
 - This judge-requested correction is a fresh immutable source revision. The prior Studionet address, deployment transaction, and Vercel release are superseded and are not evidence for this revision.
 
 ## Trust problem

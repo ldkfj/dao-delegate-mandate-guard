@@ -2,6 +2,8 @@
 
 This document is the evidence ledger for the judge-requested correction. The prior deployed instance is superseded because the intentionally frozen contract now binds proposal content and capability use to canonical Snapshot data.
 
+The complete checkpoint package is [PRE_DEPLOY_MANIFEST.json](PRE_DEPLOY_MANIFEST.json).
+
 ## Current correction revision
 
 | Field | Value |
@@ -12,6 +14,7 @@ This document is the evidence ledger for the judge-requested correction. The pri
 | Network | GenLayer Studionet, chain `61999` / `0xF22F` |
 | Contract classification | `INTENTIONALLY_FROZEN` |
 | Constructor arguments | none |
+| Locked Studio account | `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902` (`deployer`; selected and accessible read-only) |
 | Contract / deployment transaction | pending fresh deployment |
 | Vercel release | pending corrected source release |
 
@@ -31,6 +34,17 @@ This document is the evidence ledger for the judge-requested correction. The pri
 | Frontend tests | `corepack.cmd pnpm test run` from `frontend` | `4 files; 92 passed` |
 | Production build/typecheck | `corepack.cmd pnpm build` from `frontend` | PASS |
 | Production dependency audit | `corepack.cmd pnpm audit --prod` from `frontend` | no known vulnerabilities |
+
+### Raw Git-blob source hash procedure
+
+The package hash is reproduced from the committed blob, not from a working-tree text conversion:
+
+```powershell
+py -3.13 -c "import hashlib,subprocess; rev='cd77e2c7655bed7bb4955cd67cb48811a687e3ae'; path='contracts/dao_delegate_mandate_guard.py'; raw=subprocess.check_output(['git','cat-file','blob',f'{rev}:{path}']); canonical=raw.replace(b'\\r\\n',b'\\n').replace(b'\\r',b'\\n'); print(hashlib.sha256(canonical).hexdigest().upper())"
+# EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A
+```
+
+Canonicalization is UTF-8 bytes from the raw Git blob with CRLF and lone CR converted to LF before SHA-256. The exact changed API is covered by the Direct Mode contract tests and GenVM lint: `submit_proposal(mandate_id, proposal_url, proposal_title, proposal_text)` and `use_capability(capability_id)`.
 
 ## Required live evidence before release
 
