@@ -74,7 +74,7 @@ Copy-Item .env.example .env
 Set this non-secret value in `frontend/.env`:
 
 ```dotenv
-VITE_CONTRACT_ADDRESS=0x0366737fedfe950b7Baa3D9e05F439a591809a20
+VITE_CONTRACT_ADDRESS=0xC500A12309784a75367FC53aCfa54c0F231A26d1
 ```
 
 Then run `corepack.cmd pnpm dev` from `frontend`.
@@ -107,8 +107,8 @@ Live Studionet evidence and the complete proof matrix are recorded in [docs/VERI
 - RPC: `https://studio.genlayer.com/api`
 - Explorer: `https://explorer-studio.genlayer.com`
 - Constructor arguments: none
-- Contract deployment: pending fresh PRE_DEPLOY review and Studionet redeployment for this correction.
-- Contract source SHA-256 after canonical LF normalization: `EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A`.
+- Contract deployment: `0xC500A12309784a75367FC53aCfa54c0F231A26d1` from `0xaa725f836c3b7aaee1970a9db889efae979552c7ebcd890a3d3bbcd994684632` (`FINALIZED` / `SUCCESS`).
+- Contract source SHA-256 after canonical LF normalization: `C1437B81D6AFA43F616EFD2C280A2B78E8AB833C1B6AE58230EBF1437EF911F0`.
 
 If Studionet or local Studio state is reset, redeploy the same reviewed source as a fresh immutable instance, update the public address, rerun the live matrix, and obtain a refreshed review. Never reuse private keys or deployment state from another task.
 
@@ -127,4 +127,4 @@ If Studionet or local Studio state is reset, redeploy the same reviewed source a
 - The contract is intentionally frozen. Corrections require a reviewed fresh deployment and address update.
 - AI verdict quality depends on the clarity of the mandate and proposal text; `AMBIGUOUS` fails closed.
 - The production JavaScript bundle is about 781 kB before gzip (about 186 kB gzip); Vite reports a non-blocking chunk-size warning.
-- Live Vercel E2E for the corrected contract is pending the fresh Studionet deployment and release.
+- Live Vercel E2E for the corrected contract is pending the public release and final user-run verification.
