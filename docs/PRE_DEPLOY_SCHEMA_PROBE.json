@@ -1,6 +1,6 @@
 {
   "checkpoint": "PRE_DEPLOY",
-  "revision": "7169b927bc3074a538b703058e8309589015f93e",
+  "revision": "14e6a1ab82c0f8943500312840a79fdc7876c093",
   "contract_source_path": "contracts/dao_delegate_mandate_guard.py",
   "contract_source_sha256_canonical_lf_utf8": "EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A",
   "probe_command": "genvm-lint check contracts/dao_delegate_mandate_guard.py --json",
