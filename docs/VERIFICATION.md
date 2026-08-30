@@ -10,7 +10,7 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 | Field | Value |
 |---|---|
 | Submission category | `PROJECT` |
-| Exact Git revision | `14e6a1ab82c0f8943500312840a79fdc7876c093` |
+| Exact Git revision | resolved from `git rev-parse HEAD` in the review package |
 | Source status | corrected; fresh PRE_DEPLOY review required |
 | Contract source SHA-256 (canonical LF) | `EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A` |
 | Network | GenLayer Studionet, chain `61999` / `0xF22F` |
@@ -43,7 +43,7 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 The package hash is reproduced from the committed blob, not from a working-tree text conversion:
 
 ```powershell
-py -3.13 -c "import hashlib,subprocess; rev='14e6a1ab82c0f8943500312840a79fdc7876c093'; path='contracts/dao_delegate_mandate_guard.py'; raw=subprocess.check_output(['git','cat-file','blob',f'{rev}:{path}']); canonical=raw.replace(b'\\r\\n',b'\\n').replace(b'\\r',b'\\n'); print(hashlib.sha256(canonical).hexdigest().upper())"
+py -3.13 -c "import hashlib,subprocess; rev=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(); path='contracts/dao_delegate_mandate_guard.py'; raw=subprocess.check_output(['git','cat-file','blob',f'{rev}:{path}']); canonical=raw.replace(b'\\r\\n',b'\\n').replace(b'\\r',b'\\n'); print('revision='+rev); print(hashlib.sha256(canonical).hexdigest().upper())"
 # EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A
 ```
 

@@ -5,10 +5,11 @@
   "submission_category": "PROJECT",
   "independent_task": true,
   "checkpoint": "PRE_DEPLOY",
-  "revision": "14e6a1ab82c0f8943500312840a79fdc7876c093",
+  "revision": "RESOLVED_FROM_GIT_HEAD",
+  "revision_resolution_command": "git rev-parse HEAD",
   "contract_source_path": "contracts/dao_delegate_mandate_guard.py",
   "contract_source_sha256_canonical_lf_utf8": "EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A",
-  "frontend_revision": "14e6a1ab82c0f8943500312840a79fdc7876c093",
+  "frontend_revision": "RESOLVED_FROM_GIT_HEAD",
   "network": {
     "name": "GenLayer Studionet",
     "chain_id_decimal": 61999,

@@ -1,6 +1,7 @@
 {
   "checkpoint": "PRE_DEPLOY",
-  "revision": "14e6a1ab82c0f8943500312840a79fdc7876c093",
+  "revision": "RESOLVED_FROM_GIT_HEAD",
+  "revision_resolution_command": "git rev-parse HEAD",
   "contract_source_path": "contracts/dao_delegate_mandate_guard.py",
   "contract_source_sha256_canonical_lf_utf8": "EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A",
   "probe_command": "genvm-lint check contracts/dao_delegate_mandate_guard.py --json",
@@ -37,5 +38,6 @@
   },
   "constructor_arguments": [],
   "schema_scope": "Exact source only; no deployment or contract write performed.",
-  "warning": "I200 newer runner available; informational only and does not invalidate the passing current installed-runtime schema probe."
+  "warning": "I200 newer runner available; informational only and does not invalidate the passing current installed-runtime schema probe.",
+  "binding_note": "The review prompt supplies the literal commit resolved by the command above; using a resolver avoids a self-referential commit hash inside the committed evidence file."
 }
