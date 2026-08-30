@@ -4,7 +4,7 @@
   "project_folder": "E:\\Genlayer-Projects\\dao-delegate-mandate-guard",
   "submission_category": "PROJECT",
   "independent_task": true,
-  "checkpoint": "PRE_DEPLOY",
+  "checkpoint": "POST_DEPLOY_TEST",
   "revision": "RESOLVED_FROM_GIT_HEAD",
   "revision_resolution_command": "git rev-parse HEAD",
   "contract_source_path": "contracts/dao_delegate_mandate_guard.py",
@@ -26,14 +26,14 @@
   "constructor_arguments": [],
   "contract_classification": "INTENTIONALLY_FROZEN",
   "deployment": {
-    "status": "NOT_STARTED",
-    "contract_address": "",
-    "deployment_transaction": "",
-    "explorer_contract_url": "",
-    "explorer_transaction_url": "",
-    "source_parity": "",
-    "finality": "",
-    "execution": ""
+    "status": "DEPLOYED",
+    "contract_address": "0xC500A12309784a75367FC53aCfa54c0F231A26d1",
+    "deployment_transaction": "0xaa725f836c3b7aaee1970a9db889efae979552c7ebcd890a3d3bbcd994684632",
+    "explorer_contract_url": "https://explorer-studio.genlayer.com/address/0xC500A12309784a75367FC53aCfa54c0F231A26d1",
+    "explorer_transaction_url": "https://explorer-studio.genlayer.com/tx/0xaa725f836c3b7aaee1970a9db889efae979552c7ebcd890a3d3bbcd994684632",
+    "source_parity": "VERIFIED: unique Studio source dao_delegate_mandate_guard_fixed.py uploaded from exact C1437B81D6AFA43F616EFD2C280A2B78E8AB833C1B6AE58230EBF1437EF911F0 source; Explorer creator is locked account",
+    "finality": "FINALIZED",
+    "execution": "SUCCESS"
   },
   "live_web": {
     "status": "NOT_DEPLOYED",
@@ -51,6 +51,28 @@
     "exact_source_schema_probe": "PASS: 12 methods; 6 views; 6 writes; 0 constructor parameters; see PRE_DEPLOY_SCHEMA_PROBE.json",
     "changed_api": "submit_proposal canonical Snapshot binding; use_capability(u256)"
   },
+  "studio_live_matrix": {
+    "deployer_creator_verified": "0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902",
+    "mandate_id": "0",
+    "capability_id": "0",
+    "canonical_snapshot": "https://snapshot.org/#/capncompany.eth/proposal/0x79598415badd9cd9b9285d313399421f7a04a99be7183dd8a6b1b308ab3e2c5b",
+    "transactions": {
+      "create_mandate": {"hash": "0x201f3451d62088a70d63baeb5c83ba3d355bc09cd3a789772aaf53d51210f5bc", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902", "output": "0"},
+      "submit_proposal": {"hash": "0xf4522e2151b4537d6a9d71bc2c2969a3a7469ba995e72c3ef3d1f26a5b1d7f82", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78", "output": "0", "canonical_binding": "Snapshot body/title/choices fetched by validators; browser spoof fields not stored"},
+      "evaluate_capability": {"hash": "0x24b86716dcd772da212374bd7cb9871372b6e84cff50a109dd97f7eb6cc3f259", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78", "verdict": "WITHIN_MANDATE"},
+      "record_intent": {"hash": "0x308b0e13de6290fcc17753e610bf7b98c6e9ec1290de17f749e204468ff5c2f0", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78"},
+      "use_capability": {"hash": "0x249beeb9445c87f617ee634096f9554461528dbbfa1ef2fac01a0b2f1ee47336", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78", "readback_status": "USED", "proof": "state=closed; outcome=Add the Encumbered Debuff; scores_total=2022061"},
+      "unauthorized_revoke": {"hash": "0x87b220eb71e304bfe18c549262036ba3920ba2022b509f8e7a49aef909224082", "status": "FINALIZED", "execution": "ERROR", "reason": "UNAUTHORIZED_NOT_OWNER"},
+      "owner_revoke": {"hash": "0x8018031fc657814e5fd9b7eb50990f2a3dbf9ea0e141bd21602cf12cb84a14f0", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902", "readback_status": "REVOKED"}
+    },
+    "authoritative_readback": {
+      "capability_status": "USED",
+      "capability_verdict": "WITHIN_MANDATE",
+      "audit_count": 8,
+      "audit_entry_7": "CAPABILITY_USED; prior_state=GRANTED; new_state=USED",
+      "mandate_status": "REVOKED"
+    }
+  },
   "recovery_plan": [
     "If the locked account is unavailable, select and record another accessible valid 20-byte Studionet account before any signature; invalidate this package and obtain fresh PRE_DEPLOY review.",
     "If Studio UI or local state resets, preserve this source revision and canonical hash, reselect the account, repeat read-only schema checks, and obtain fresh review if any bound field changes.",
@@ -59,5 +81,5 @@
   ],
   "secret_handling": "No private keys, wallet exports, credentials, or secrets are stored or submitted.",
   "material_change_rule": "Any source, revision, source hash, network, account, constructor, classification, deployment, frontend, or evidence change invalidates this PRE_DEPLOY package and requires fresh review.",
-  "deployment_authorization_state": "No signature, deployment transaction, or contract write has occurred for this corrected source package."
+  "deployment_authorization_state": "Fresh deployment and live writes were performed only after PRE_DEPLOY APPROVED, from locked account 0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902; prior instances remain excluded."
 }
