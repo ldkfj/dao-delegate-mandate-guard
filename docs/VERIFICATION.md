@@ -20,7 +20,7 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 | Contract | `0xC500A12309784a75367FC53aCfa54c0F231A26d1` |
 | Deployment transaction | `0xaa725f836c3b7aaee1970a9db889efae979552c7ebcd890a3d3bbcd994684632` (`FINALIZED` / `SUCCESS`) |
 | Deployment creator | `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902` (locked deployer) |
-| Vercel release | [production URL](https://dao-delegate-mandate-guard.vercel.app), deployment `dpl_23ZqzsUus6hwcp3Ep7TPZVYMFxAp`, READY |
+| Vercel release | [production URL](https://dao-delegate-mandate-guard.vercel.app), deployment `dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6`, READY |
 
 ## Judge-requested correction
 
@@ -95,7 +95,7 @@ The old deployment and old Vercel transaction ledger must not be reused for this
 ### Production Vercel smoke evidence
 
 The production alias is [dao-delegate-mandate-guard.vercel.app](https://dao-delegate-mandate-guard.vercel.app)
-and the current READY deployment is `dpl_23ZqzsUus6hwcp3Ep7TPZVYMFxAp`. Read-only verification in the
+and the current READY deployment is `dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6`. Read-only verification in the
 Codex In-app Browser passed: the header shows contract `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, the
 footer shows Studionet `0xF22F`, the authoritative audit view loads 10 entries, the `CAPABILITY_USED`
 filter isolates the expected entry, and the page remains disconnected after reload.

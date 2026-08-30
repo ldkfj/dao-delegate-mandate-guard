@@ -38,8 +38,8 @@
   "live_web": {
     "status": "DEPLOYED",
     "url": "https://dao-delegate-mandate-guard.vercel.app",
-    "vercel_deployment": "dpl_23ZqzsUus6hwcp3Ep7TPZVYMFxAp",
-    "vercel_inspector_url": "https://vercel.com/gam9/dao-delegate-mandate-guard/23ZqzsUus6hwcp3Ep7TPZVYMFxAp",
+    "vercel_deployment": "dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6",
+    "vercel_inspector_url": "https://vercel.com/gam9/dao-delegate-mandate-guard/6JpwF61ZKM6LjLEdMaVRYiX58VC6",
     "deployment_alias_verified": true,
     "built_from_revision": "RESOLVED_FROM_GIT_HEAD",
     "build_revision_resolution_command": "git rev-parse HEAD",
