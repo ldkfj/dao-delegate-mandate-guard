@@ -120,10 +120,6 @@ export const WalletChooserModal: React.FC<WalletChooserModalProps> = ({ triggerR
         </div>
 
         <div className="modal-body">
-          <p className="modal-description">
-            Select an authorized EIP-6963 provider to interact with GenLayer Studionet (0xF22F). Supported wallets: MetaMask, OKX Wallet, Rabby.
-          </p>
-
           {error && (
             <div className="alert alert-error" role="alert" data-testid="wallet-error-alert">
               <div className="alert-message">{error}</div>

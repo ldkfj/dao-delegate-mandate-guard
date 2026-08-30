@@ -41,7 +41,8 @@
     "vercel_deployment": "dpl_Ddha4zHZKh2Mgasi92ys9zTZKSDP",
     "vercel_inspector_url": "https://vercel.com/gam9/dao-delegate-mandate-guard/Ddha4zHZKh2Mgasi92ys9zTZKSDP",
     "deployment_alias_verified": true,
-    "built_from_revision": "93bfe68d6e9fa97ebf66dabbaff4a9cdea1f8c69",
+    "built_from_revision": "RESOLVED_FROM_GIT_HEAD",
+    "build_revision_resolution_command": "git rev-parse HEAD",
     "read_only_smoke": {
       "status": "PASS",
       "browser": "Codex In-app Browser",
