@@ -2,7 +2,7 @@
 
 This document is the evidence ledger for the judge-requested correction. The prior deployed instance is superseded because the intentionally frozen contract now binds proposal content and capability use to canonical Snapshot data.
 
-The complete checkpoint package is [PRE_DEPLOY_MANIFEST.json](PRE_DEPLOY_MANIFEST.json); its current checkpoint is `POST_DEPLOY_TEST`.
+The complete checkpoint package is [PRE_DEPLOY_MANIFEST.json](PRE_DEPLOY_MANIFEST.json); its release checkpoint is `POST_GITHUB_VERCEL_FINAL`.
 The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SCHEMA_PROBE.json).
 
 ## Current correction revision
@@ -10,7 +10,8 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 | Field | Value |
 |---|---|
 | Submission category | `PROJECT` |
-| Exact Git revision | resolved from `git rev-parse HEAD` in the review package |
+| Exact source/frontend correction revision | `336a65706ecfeec589b479eaa7bbeeb5b8f47bfb` |
+| Final evidence-package revision | recorded literally in the Final release binding section |
 | Source status | exact reviewed source deployed and live-tested |
 | Contract source SHA-256 (canonical LF) | `C1437B81D6AFA43F616EFD2C280A2B78E8AB833C1B6AE58230EBF1437EF911F0` |
 | Network | GenLayer Studionet, chain `61999` / `0xF22F` |
@@ -20,7 +21,7 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 | Contract | `0xC500A12309784a75367FC53aCfa54c0F231A26d1` |
 | Deployment transaction | `0xaa725f836c3b7aaee1970a9db889efae979552c7ebcd890a3d3bbcd994684632` (`FINALIZED` / `SUCCESS`) |
 | Deployment creator | `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902` (locked deployer) |
-| Vercel release | [production URL](https://dao-delegate-mandate-guard.vercel.app), deployment `dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6`, READY |
+| Vercel release | [production URL](https://dao-delegate-mandate-guard.vercel.app), fresh corrected deployment recorded in Final release binding |
 
 ## Judge-requested correction
 
@@ -54,7 +55,7 @@ All transactions below are on `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, with
 
 Authoritative finalized reads: capability #0 is `USED` with verdict `WITHIN_MANDATE`; the exact post-submit JSON response is preserved in [studio-capability-0-readback.json](evidence/studio-capability-0-readback.json) and includes the canonical URL, canonical title `CIP-13: Encumbered`, canonical body, `proposal_hash`, `mandate_content_hash`, `status`, and deterministic use proof. The stored title/body are not the browser-supplied spoof values.
 
-The exact post-rejection JSON response for capability #1 is preserved in [studio-capability-1-non-final-readback.json](evidence/studio-capability-1-non-final-readback.json): `status` is `GRANTED`, `verdict` is `WITHIN_MANDATE`, and both `use_note` and `used_at` are empty. This is the authoritative no-state-drift readback after the `GOVERNANCE_ACTION_NOT_FINAL` rollback; `get_audit_count()` returned `10` after the case. A preceding deliberate call before `record_intent` returned `INTENT_NOT_RECORDED`; it is retained only as a diagnostic and is not used as the decisive non-final evidence.
+The exact post-rejection JSON response for capability #1 is preserved in [studio-capability-1-non-final-readback.json](evidence/studio-capability-1-non-final-readback.json): `status` is `GRANTED`, `verdict` is `WITHIN_MANDATE`, and both `use_note` and `used_at` are empty. This is the authoritative no-state-drift readback after the `GOVERNANCE_ACTION_NOT_FINAL` rollback; `get_audit_count()` returned `10` after the case. A preceding deliberate call before `record_intent` returned `INTENT_NOT_RECORDED`; it is retained only as a diagnostic and is not used as the decisive non-final evidence. The `10` count is historical: the two later OKX owner E2E writes increased the live timeline to `12`.
 
 The live `use_capability` rejection dialog recorded `FINALIZED`, result `ERROR`, and the exact rollback payload `GOVERNANCE_ACTION_NOT_FINAL`. Its validator consensus history reached `ACCEPTED` before finalization.
 
@@ -65,7 +66,7 @@ The live `use_capability` rejection dialog recorded `FINALIZED`, result `ERROR`,
 | Contract direct tests | `py -3.13 -m pytest tests/direct -q -p no:cacheprovider` | `20 passed` |
 | GenVM lint | `$env:PYTHONIOENCODING='utf-8'; genvm-lint contracts/dao_delegate_mandate_guard.py` | PASS |
 | Exact-source schema probe | `genvm-lint check contracts/dao_delegate_mandate_guard.py --json` | `ok=true; 12 methods; 6 views; 6 writes; 0 constructor parameters` |
-| Frontend tests | `corepack.cmd pnpm test run` from `frontend` | `4 files; 92 passed` |
+| Frontend tests | `corepack.cmd pnpm test run` from `frontend` | `4 files; 93 passed` |
 | Production build/typecheck | `corepack.cmd pnpm build` from `frontend` | PASS |
 | Production dependency audit | `corepack.cmd pnpm audit --prod` from `frontend` | no known vulnerabilities |
 
@@ -79,6 +80,40 @@ py -3.13 -c "import hashlib,subprocess; rev=subprocess.check_output(['git','rev-
 ```
 
 Canonicalization is UTF-8 bytes from the raw Git blob with CRLF and lone CR converted to LF before SHA-256. The exact changed API is covered by the Direct Mode contract tests and the schema probe: `submit_proposal(mandate_id, proposal_url, proposal_title, proposal_text)` and `use_capability(capability_id)`. The schema probe records all 12 public methods, six views, six writes, and zero constructor parameters.
+
+## Evidence-based scorecard
+
+```text
+GENLAYER SUBMISSION CATEGORY AND SCORECARD
+Category: PROJECT
+Validity gate: PASS
+
+GenLayer fit: 5/5
+Evidence: Validator-consensus mandate/proposal evaluation is consensus-critical; canonical Snapshot identity and content are fetched inside strict_eq, and the verdict controls capability state. Verified in the deployed matrix, source, and contract tests.
+Weakness/blocker: AI quality depends on mandate clarity and Snapshot availability; no current blocker.
+
+Contract quality: 5/5
+Evidence: Authorization, canonical binding, closed/non-zero-score finality, intent-before-use, revocation, rollback, and append-only audit transitions are verified by 20 Direct Mode tests and finalized Studionet success/error branches.
+Weakness/blocker: The contract is intentionally frozen and requires a fresh deployment for corrections; no current blocker.
+
+Engineering: 5/5
+Evidence: Exact-source schema probe, GenVM lint, 20 contract tests, 93 frontend tests, production build, dependency audit, source parity, and public release evidence are recorded in this document.
+Weakness/blocker: Studionet reset or reviewer availability can delay reproduction; no current blocker.
+
+Frontend / UX: 4/5
+Evidence: The live app exposes complete contract-backed journeys, lifecycle/readback states, explicit MetaMask/OKX/Rabby choice, provider isolation, and reload-disconnected behavior; Chrome OKX E2E is recorded below.
+Weakness/blocker: Rabby was covered by automated/provider evidence but was not detected in the inspected Chrome session.
+
+Overall evidence-based assessment: 19/20
+Submission recommendation: READY only after fresh final-release evidence and both final checkpoint approvals.
+```
+
+## Final release binding
+
+- Previously reviewed final-release commit: `fb77c59a5c3fa10d29beacfa67486fd65d1b80d8`
+- Source/frontend correction commit: `336a65706ecfeec589b479eaa7bbeeb5b8f47bfb`
+- This correction package is bound to source/frontend commit `336a65706ecfeec589b479eaa7bbeeb5b8f47bfb`; the deployed contract source hash and frontend source tree remain unchanged from that listed correction commit.
+- The prior Vercel deployment `dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6` is superseded for final-release evidence. A fresh corrected deployment must be bound here before final re-review.
 
 ## Required live evidence before release
 
@@ -95,9 +130,9 @@ The old deployment and old Vercel transaction ledger must not be reused for this
 ### Production Vercel smoke evidence
 
 The production alias is [dao-delegate-mandate-guard.vercel.app](https://dao-delegate-mandate-guard.vercel.app)
-and the current READY deployment is `dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6`. Read-only verification in the
+and the prior READY deployment was `dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6`; it is superseded for final-release evidence. Read-only verification in the
 Codex In-app Browser passed: the header shows contract `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, the
-footer shows Studionet `0xF22F`, the authoritative audit view loads 10 entries, the `CAPABILITY_USED`
+footer shows Studionet `0xF22F`, the authoritative audit view loads 12 entries, the `CAPABILITY_USED`
 filter isolates the expected entry, and the page remains disconnected after reload.
 
 The AI-controlled Chrome E2E owner journey also passed with separate OKX account
@@ -109,6 +144,9 @@ hash `0xcdd447bf2af47c90869742883a643f75d118e50bcc5a804ebc4b3d63f2d98b63` reache
 Manual disconnect and full reload both returned to disconnected state. Delegate proposal/evaluation/use,
 canonical Snapshot binding, and the non-final governance-action rejection remain bound to the fresh
 Studionet matrix above; no extra delegate signature was fabricated for this owner-only wallet run.
+
+The corrected final release must show only the human-facing wallet names `MetaMask`, `OKX Wallet`, and
+`Rabby`; provider implementation identifiers such as `io.metamask` and `com.okex.wallet` are internal only.
 
 ## Recovery
 

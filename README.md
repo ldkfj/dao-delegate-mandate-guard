@@ -6,7 +6,15 @@ DAO Delegate Mandate Guard turns a human-readable delegation policy into an audi
 
 - Detailed evidence: [docs/VERIFICATION.md](docs/VERIFICATION.md)
 - PRE_DEPLOY manifest: [docs/PRE_DEPLOY_MANIFEST.json](docs/PRE_DEPLOY_MANIFEST.json)
+- Studionet contract: [Explorer](https://explorer-studio.genlayer.com/address/0xC500A12309784a75367FC53aCfa54c0F231A26d1)
+- Live application: [dao-delegate-mandate-guard.vercel.app](https://dao-delegate-mandate-guard.vercel.app)
 - This judge-requested correction is a fresh immutable source revision. The prior Studionet address, deployment transaction, and Vercel release are superseded and are not evidence for this revision.
+
+## Current release revision
+
+- Frontend correction commit: `336a65706ecfeec589b479eaa7bbeeb5b8f47bfb`
+- Contract source SHA-256 (canonical LF UTF-8): `C1437B81D6AFA43F616EFD2C280A2B78E8AB833C1B6AE58230EBF1437EF911F0`
+- The final evidence-package commit is recorded literally in [docs/VERIFICATION.md](docs/VERIFICATION.md) after release binding is complete.
 
 ## Trust problem
 
@@ -89,7 +97,7 @@ Verified on 2026-08-30 for the judge-requested correction:
 
 cd frontend
 corepack.cmd pnpm test run --reporter=dot
-# 4 files, 92 tests passed
+# 4 files, 93 tests passed
 
 corepack.cmd pnpm build
 # TypeScript and Vite production build passed
@@ -99,6 +107,21 @@ corepack.cmd pnpm audit --prod
 ```
 
 Live Studionet evidence and the complete proof matrix are recorded in [docs/VERIFICATION.md](docs/VERIFICATION.md).
+
+## Evidence-based scorecard
+
+Category: `PROJECT`
+Validity gate: `PASS`
+
+| Axis | Score | Evidence-backed assessment | Remaining weakness |
+|---|---:|---|---|
+| GenLayer fit | 5/5 | Validator consensus evaluates the natural-language mandate/proposal boundary; canonical Snapshot content is fetched inside `strict_eq`, and the verdict controls capability state. Verified by the deployed matrix and source/tests. | AI quality depends on mandate clarity and Snapshot availability. |
+| Contract quality | 5/5 | The contract enforces actor authorization, canonical proposal binding, closed/non-zero-score finality, intent-before-use, revocation, rollback, and append-only audit state. Verified by 20 Direct Mode tests and finalized Studionet success/error branches. | Contract is intentionally frozen; corrections require a fresh deployment. |
+| Engineering | 5/5 | Exact-source schema probe, GenVM lint, 20 contract tests, 93 frontend tests, production build, dependency audit, source parity, and public release evidence are recorded. | Studionet reset/reviewer availability can delay reproducibility. |
+| Frontend / UX | 4/5 | The live app provides the complete mandate/proposal/capability/audit journeys, lifecycle monitor, explicit MetaMask/OKX/Rabby choice, provider isolation, and reload-disconnected behavior. | Rabby was covered by automated/provider evidence but was not detected in the inspected Chrome session. |
+
+Overall evidence-based assessment: `19/20` (strong, live-verified PROJECT).
+Submission recommendation: `READY` only after the fresh final release and both final checkpoint approvals.
 
 ## Deployment
 
@@ -130,7 +153,8 @@ If Studionet or local Studio state is reset, redeploy the same reviewed source a
 - Production Vercel release: https://dao-delegate-mandate-guard.vercel.app
 - Read-only live smoke verification passed on the production release: the page shows the reviewed
   contract `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, Studionet `0xF22F`, the authoritative
-  10-entry audit timeline, and reload-disconnected wallet state.
+  12-entry audit timeline, and reload-disconnected wallet state. The earlier 10-entry observation
+  was captured before the two final OKX owner E2E writes and is historical.
 - OKX wallet E2E owner journey passed on the production release with a separate account: create
   mandate #2 reached finality/readback, revoke reached finality/readback, and manual disconnect plus
   reload returned to the disconnected state. Delegate proposal/evaluation/use and the negative
