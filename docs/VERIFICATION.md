@@ -9,6 +9,7 @@ The complete checkpoint package is [PRE_DEPLOY_MANIFEST.json](PRE_DEPLOY_MANIFES
 | Field | Value |
 |---|---|
 | Submission category | `PROJECT` |
+| Exact Git revision | `c84a1671a1fc2e5b1aae43d324d3a68bca3c3eb4` |
 | Source status | corrected; fresh PRE_DEPLOY review required |
 | Contract source SHA-256 (canonical LF) | `EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A` |
 | Network | GenLayer Studionet, chain `61999` / `0xF22F` |
@@ -40,7 +41,7 @@ The complete checkpoint package is [PRE_DEPLOY_MANIFEST.json](PRE_DEPLOY_MANIFES
 The package hash is reproduced from the committed blob, not from a working-tree text conversion:
 
 ```powershell
-py -3.13 -c "import hashlib,subprocess; rev='cd77e2c7655bed7bb4955cd67cb48811a687e3ae'; path='contracts/dao_delegate_mandate_guard.py'; raw=subprocess.check_output(['git','cat-file','blob',f'{rev}:{path}']); canonical=raw.replace(b'\\r\\n',b'\\n').replace(b'\\r',b'\\n'); print(hashlib.sha256(canonical).hexdigest().upper())"
+py -3.13 -c "import hashlib,subprocess; rev='c84a1671a1fc2e5b1aae43d324d3a68bca3c3eb4'; path='contracts/dao_delegate_mandate_guard.py'; raw=subprocess.check_output(['git','cat-file','blob',f'{rev}:{path}']); canonical=raw.replace(b'\\r\\n',b'\\n').replace(b'\\r',b'\\n'); print(hashlib.sha256(canonical).hexdigest().upper())"
 # EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A
 ```
 
