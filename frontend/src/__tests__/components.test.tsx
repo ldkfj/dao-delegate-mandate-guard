@@ -132,12 +132,12 @@ describe('UI Component Renders, Lifecycle Disabled States, and User Journeys', (
       await user.click(compliantBtn);
 
       const titleInput = screen.getByLabelText(/Proposal Title/i) as HTMLInputElement;
-      expect(titleInput.value).toBe('Security Bug Bounty Program - Q3 Funding');
+      expect(titleInput.value).toBe('CIP-13: Encumbered');
 
       const violationBtn = screen.getByRole('button', { name: /✕ Policy Violation/i });
       await user.click(violationBtn);
 
-      expect(titleInput.value).toBe('Emergency Collateralization Ratio Reduction');
+      expect(titleInput.value).toBe('Do you agree to pay $800 for Snapshot Pro for June?');
     });
   });
 
@@ -274,7 +274,7 @@ describe('UI Component Renders, Lifecycle Disabled States, and User Journeys', (
       // Click Use Capability button
       await user.click(screen.getByRole('button', { name: /Use Capability/i }));
       expect(screen.getByRole('dialog')).toBeDefined();
-      expect(screen.getByLabelText(/Execution Note/i)).toBeDefined();
+      expect(screen.getByText(/canonical Snapshot proposal is closed/i)).toBeDefined();
     });
 
     it('disables intent and use action buttons when capability status is REJECTED or USED', async () => {

@@ -403,19 +403,19 @@ describe('Contract Service & Transaction Classifier Matrix', () => {
           condition_summary: '',
           reasoning: 'Reasoning',
           intent_text: 'Voting YES',
-          use_note: 'Voted in block 100',
+          use_note: 'Verified Snapshot governance action: proposal=0xabc; state=closed; outcome=For; scores_total=1',
           created_at: '2026-08-01T00:00:00Z',
           evaluated_at: '2026-08-01T00:01:00Z',
           used_at: '2026-08-01T00:02:00Z',
         }),
       } as any);
 
-      await service.useCapability('1', 'Voted in block 100', dummyProvider, dummyAccount, vi.fn());
+      await service.useCapability('1', dummyProvider, dummyAccount, vi.fn());
 
       expect(mockWriteContract).toHaveBeenCalledWith({
         address: dummyContractAddress,
         functionName: 'use_capability',
-        args: [1n, 'Voted in block 100'],
+        args: [1n],
         value: 0n,
       });
     });

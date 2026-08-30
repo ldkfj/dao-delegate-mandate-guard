@@ -4,10 +4,8 @@ DAO Delegate Mandate Guard turns a human-readable delegation policy into an audi
 
 ## Verified links
 
-- Studionet contract: [`0x0366737fedfe950b7Baa3D9e05F439a591809a20`](https://explorer-studio.genlayer.com/address/0x0366737fedfe950b7Baa3D9e05F439a591809a20)
-- Deployment transaction: [`0x6390…c2cf`](https://explorer-studio.genlayer.com/tx/0x6390e98018e1616950bfa493a3167a311f5b67a01cd10b153e94ba77c2a4c2cf)
-- Live app: [dao-delegate-mandate-guard.vercel.app](https://dao-delegate-mandate-guard.vercel.app)
 - Detailed evidence: [docs/VERIFICATION.md](docs/VERIFICATION.md)
+- This judge-requested correction is a fresh immutable source revision. The prior Studionet address, deployment transaction, and Vercel release are superseded and are not evidence for this revision.
 
 ## Trust problem
 
@@ -20,9 +18,9 @@ Whether a natural-language proposal stays inside a natural-language mandate is n
 ## How it works
 
 1. An owner creates a mandate for a delegate with policy text, exclusions, and expiry.
-2. A proposal is submitted against that mandate.
+2. A canonical Snapshot proposal URL is submitted; validators fetch and pin the proposal identity, title, body, and hash from Snapshot's GraphQL endpoint.
 3. GenLayer validators evaluate the proposal and persist the verdict and reasoning.
-4. For a granted capability, the delegate records voting intent and then records capability use.
+4. For a granted capability, the delegate records voting intent; capability use re-fetches the canonical proposal and requires a closed proposal with non-zero final scores, then stores a deterministic governance-action proof.
 5. The owner can revoke the mandate; unauthorized revocation fails without changing state.
 6. Anyone can inspect mandates, capabilities, and the audit timeline.
 
@@ -39,6 +37,7 @@ React/Vite frontend
                 ▼
 GenLayer Studionet Intelligent Contract
   ├─ deterministic authorization and state transitions
+  ├─ canonical Snapshot proposal binding and final governance-action proof
   ├─ nondeterministic proposal evaluation via validator consensus
   └─ authoritative mandates, capabilities, and append-only audit log
 ```
@@ -49,10 +48,11 @@ The chain is the source of truth. The browser stores no durable wallet session a
 
 - Actors: mandate owner, named delegate, and public readers.
 - Mandate states: `ACTIVE` → `REVOKED`; expiry is derived from the stored UTC timestamp.
-- Capability states: `PENDING` → `GRANTED` / `DENIED`; `record_intent` appends an `INTENT_RECORDED` audit event while status remains `GRANTED`, then use transitions `GRANTED` → `USED`.
+- Capability states: `PENDING` → `GRANTED` / `DENIED`; `record_intent` appends an `INTENT_RECORDED` audit event while status remains `GRANTED`, then verified final Snapshot state transitions `GRANTED` → `USED`.
 - Core writes: `create_mandate`, `submit_proposal`, `evaluate_capability`, `record_intent`, `use_capability`, `revoke_mandate`.
 - Core reads: mandate/capability/audit getters and counts.
 - AI equivalence is constrained to a canonical JSON decision schema and fixed verdict/condition categories.
+- Proposal title/body fields supplied by the browser are not authoritative; the contract stores only the validator-agreed canonical Snapshot record. Use notes are generated from the verified closed proposal outcome.
 - Deployment classification: `INTENTIONALLY_FROZEN`; there is no public upgrade path or upgrader claim.
 
 ## Transaction lifecycle
@@ -80,11 +80,11 @@ Then run `corepack.cmd pnpm dev` from `frontend`.
 
 ## Tests and verification
 
-Verified on 2026-08-23:
+Verified on 2026-08-30 for the judge-requested correction:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest tests\direct -q
-# 18 passed
+# 20 passed
 
 cd frontend
 corepack.cmd pnpm test run --reporter=dot
@@ -106,8 +106,8 @@ Live Studionet evidence and the complete proof matrix are recorded in [docs/VERI
 - RPC: `https://studio.genlayer.com/api`
 - Explorer: `https://explorer-studio.genlayer.com`
 - Constructor arguments: none
-- Contract: `0x0366737fedfe950b7Baa3D9e05F439a591809a20`
-- Deployed contract source is byte-for-byte equivalent after canonical LF normalization to `contracts/dao_delegate_mandate_guard.py` at commit `406c518db2b9b51b70c8caeb28816506ba83ac81`.
+- Contract deployment: pending fresh PRE_DEPLOY review and Studionet redeployment for this correction.
+- Contract source SHA-256 after canonical LF normalization: `EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A`.
 
 If Studionet or local Studio state is reset, redeploy the same reviewed source as a fresh immutable instance, update the public address, rerun the live matrix, and obtain a refreshed review. Never reuse private keys or deployment state from another task.
 
@@ -126,4 +126,4 @@ If Studionet or local Studio state is reset, redeploy the same reviewed source a
 - The contract is intentionally frozen. Corrections require a reviewed fresh deployment and address update.
 - AI verdict quality depends on the clarity of the mandate and proposal text; `AMBIGUOUS` fails closed.
 - The production JavaScript bundle is about 781 kB before gzip (about 186 kB gzip); Vite reports a non-blocking chunk-size warning.
-- Live Vercel E2E with OKX Wallet passed the compliant, denied, authorization-failure, owner-revocation, reload-disconnected, and authoritative-readback paths; see `docs/VERIFICATION.md`.
+- Live Vercel E2E for the corrected contract is pending the fresh Studionet deployment and release.

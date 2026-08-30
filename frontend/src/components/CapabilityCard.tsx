@@ -35,7 +35,6 @@ export const CapabilityCard: React.FC<CapabilityCardProps> = ({
 
   // Use capability modal state
   const [showUseModal, setShowUseModal] = useState(false);
-  const [useNote, setUseNote] = useState('Cast vote on Snapshot proposal #0x9876 with tx 0xabcd1234');
   const [isSubmittingUse, setIsSubmittingUse] = useState(false);
   const [useError, setUseError] = useState<string | null>(null);
 
@@ -151,11 +150,6 @@ export const CapabilityCard: React.FC<CapabilityCardProps> = ({
     setUseError(null);
 
     if (!capability) return;
-    if (!useNote.trim()) {
-      setUseError('Use note cannot be empty');
-      return;
-    }
-
     if (!isConnected || !provider || !account) {
       openChooser();
       return;
@@ -170,7 +164,6 @@ export const CapabilityCard: React.FC<CapabilityCardProps> = ({
       setIsSubmittingUse(true);
       await useCapability(
         capability.id,
-        useNote.trim(),
         provider,
         account,
         onTransactionStateChange
@@ -367,9 +360,9 @@ export const CapabilityCard: React.FC<CapabilityCardProps> = ({
             </div>
           )}
 
-          {/* Proposal Full Text */}
+          {/* Canonical Proposal Full Text */}
           <div className="entity-section">
-            <h4 className="section-label">Submitted Proposal Text:</h4>
+            <h4 className="section-label">Canonical Snapshot Proposal Text:</h4>
             <div className="text-content-box">{capability.proposal_text}</div>
           </div>
 
@@ -389,7 +382,7 @@ export const CapabilityCard: React.FC<CapabilityCardProps> = ({
                 <strong>Used At (UTC):</strong> {capability.used_at || 'Recorded on-chain'}
               </p>
               <p>
-                <strong>Execution Note / Tx Proof:</strong> {capability.use_note}
+                <strong>Verified Governance Action Proof:</strong> {capability.use_note}
               </p>
             </div>
           )}
@@ -460,25 +453,10 @@ export const CapabilityCard: React.FC<CapabilityCardProps> = ({
               Execute Capability #{capability?.id}
             </h3>
             <p className="modal-desc">
-              Finalize this capability on-chain with proof or a transaction reference note.
+              Finalize this capability only when the canonical Snapshot proposal is closed and has final scores.
             </p>
 
             <form onSubmit={handleUseSubmit}>
-              <div className="form-group">
-                <label htmlFor="use-note-input" className="form-label">
-                  Execution Note / Vote Proof <span className="req">*</span>
-                </label>
-                <textarea
-                  id="use-note-input"
-                  className="form-textarea"
-                  rows={3}
-                  value={useNote}
-                  onChange={(e) => setUseNote(e.target.value)}
-                  placeholder="e.g. Cast vote on Snapshot proposal #0x9876..."
-                  required
-                />
-              </div>
-
               {useError && (
                 <div className="form-alert-error" role="alert">
                   <span className="alert-icon">⚠️</span>

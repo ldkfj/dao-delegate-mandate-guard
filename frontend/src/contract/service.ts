@@ -668,19 +668,17 @@ export async function recordIntent(
 
 export async function useCapability(
   capabilityId: string | number | bigint,
-  useNote: string,
   provider: EIP1193Provider,
   accountAddress: string,
   onStageChange?: StageCallback,
   options?: { timeoutMs?: number; pollIntervalMs?: number }
 ): Promise<{ txHash: string }> {
-  const trimmed = useNote.trim();
   const result = await executeTransactionWithLifecycle(
     'use_capability',
     provider,
     accountAddress,
     'use_capability',
-    [BigInt(capabilityId), trimmed],
+    [BigInt(capabilityId)],
     {
       ...options,
       onStageChange,
@@ -688,6 +686,9 @@ export async function useCapability(
         const cap = await getCapability(capabilityId);
         if (cap.status !== 'USED') {
           throw new Error(`Readback mismatch: capability status is ${cap.status}, expected USED`);
+        }
+        if (!cap.use_note.startsWith('Verified Snapshot governance action:')) {
+          throw new Error('Readback mismatch: capability lacks canonical governance proof');
         }
       },
     }

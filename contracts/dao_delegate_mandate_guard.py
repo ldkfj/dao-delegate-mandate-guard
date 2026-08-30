@@ -24,6 +24,13 @@ VALID_VERDICTS = (
 )
 
 ZERO_ADDRESS = Address("0x0000000000000000000000000000000000000000")
+SNAPSHOT_URL_PREFIX = "https://snapshot.org/#/"
+SNAPSHOT_GRAPHQL_URL = "https://hub.snapshot.org/graphql"
+
+SNAPSHOT_PROPOSAL_QUERY = (
+    "query($id: String!) { proposal(id: $id) { id title body space { id } "
+    "choices start end state scores scores_total } }"
+)
 
 EVALUATION_SYSTEM_PROMPT = """You are an impartial DAO governance mandate auditor.
 Your job is to evaluate whether a submitted DAO proposal snapshot falls strictly within the delegate's authorized voting mandate and exclusions.
@@ -103,6 +110,115 @@ def _validate_https_url(url: str, param_name: str) -> None:
         raise gl.vm.UserError(f"{param_name}_LENGTH_OUT_OF_BOUNDS")
     if not trimmed.startswith("https://"):
         raise gl.vm.UserError(f"{param_name}_MUST_START_WITH_HTTPS")
+
+
+def _parse_canonical_snapshot_url(url: str) -> tuple[str, str, str]:
+    _validate_https_url(url, "PROPOSAL_URL")
+    trimmed = url.strip()
+    if not trimmed.startswith(SNAPSHOT_URL_PREFIX):
+        raise gl.vm.UserError("PROPOSAL_URL_MUST_BE_CANONICAL_SNAPSHOT")
+
+    path = trimmed[len(SNAPSHOT_URL_PREFIX):]
+    marker = "/proposal/"
+    if marker not in path:
+        raise gl.vm.UserError("PROPOSAL_URL_MUST_BE_CANONICAL_SNAPSHOT")
+    space_id, proposal_id = path.split(marker, 1)
+    if (
+        not space_id
+        or not proposal_id.startswith("0x")
+        or len(proposal_id) != 66
+        or any(char not in "0123456789abcdefABCDEF" for char in proposal_id[2:])
+    ):
+        raise gl.vm.UserError("PROPOSAL_URL_MUST_BE_CANONICAL_SNAPSHOT")
+
+    canonical_id = proposal_id.lower()
+    canonical_url = f"{SNAPSHOT_URL_PREFIX}{space_id}{marker}{canonical_id}"
+    if trimmed != canonical_url:
+        raise gl.vm.UserError("PROPOSAL_URL_MUST_BE_CANONICAL_SNAPSHOT")
+    return space_id, canonical_id, canonical_url
+
+
+def _snapshot_json_body(response) -> dict:
+    status_code = getattr(response, "status_code", getattr(response, "status", 0))
+    if status_code != 200:
+        raise gl.vm.UserError(f"SNAPSHOT_HTTP_STATUS_{status_code}")
+    body = response.body
+    if isinstance(body, bytes):
+        body = body.decode("utf-8")
+    try:
+        payload = json.loads(body)
+    except Exception:
+        raise gl.vm.UserError("SNAPSHOT_INVALID_JSON")
+    if not isinstance(payload, dict) or payload.get("errors"):
+        raise gl.vm.UserError("SNAPSHOT_GRAPHQL_ERROR")
+    return payload
+
+
+def _fetch_canonical_snapshot_proposal(space_id: str, proposal_id: str, final: bool = False) -> dict:
+    def fetch() -> str:
+        response = gl.nondet.web.request(
+            SNAPSHOT_GRAPHQL_URL,
+            method="POST",
+            body={
+                "query": SNAPSHOT_PROPOSAL_QUERY,
+                "variables": {"id": proposal_id},
+            },
+        )
+        payload = _snapshot_json_body(response)
+        proposal = payload.get("data", {}).get("proposal")
+        if not isinstance(proposal, dict):
+            raise gl.vm.UserError("SNAPSHOT_PROPOSAL_NOT_FOUND")
+
+        returned_id = str(proposal.get("id", "")).lower()
+        returned_space = proposal.get("space", {})
+        returned_space_id = str(returned_space.get("id", "")) if isinstance(returned_space, dict) else ""
+        if returned_id != proposal_id or returned_space_id != space_id:
+            raise gl.vm.UserError("SNAPSHOT_PROPOSAL_IDENTITY_MISMATCH")
+
+        title = proposal.get("title")
+        body = proposal.get("body")
+        choices = proposal.get("choices")
+        if not isinstance(title, str) or not title.strip() or not isinstance(body, str):
+            raise gl.vm.UserError("SNAPSHOT_PROPOSAL_CONTENT_INVALID")
+        if not isinstance(choices, list) or not choices or not all(isinstance(choice, str) for choice in choices):
+            raise gl.vm.UserError("SNAPSHOT_PROPOSAL_CHOICES_INVALID")
+
+        result = {
+            "id": returned_id,
+            "space_id": returned_space_id,
+            "title": title.strip(),
+            "body": body,
+            "choices": choices,
+            "start": int(proposal.get("start", 0)),
+            "end": int(proposal.get("end", 0)),
+        }
+        if final:
+            state = str(proposal.get("state", "")).lower()
+            scores = proposal.get("scores")
+            scores_total = proposal.get("scores_total")
+            if state != "closed":
+                raise gl.vm.UserError("GOVERNANCE_ACTION_NOT_FINAL")
+            if (
+                not isinstance(scores, list)
+                or len(scores) != len(choices)
+                or not all(isinstance(score, (int, float)) and score >= 0 for score in scores)
+                or not isinstance(scores_total, (int, float))
+                or scores_total <= 0
+            ):
+                raise gl.vm.UserError("GOVERNANCE_ACTION_HAS_NO_FINAL_SCORES")
+            highest = max(scores)
+            winners = [choices[index] for index, score in enumerate(scores) if score == highest]
+            result.update(
+                {
+                    "state": state,
+                    "scores": scores,
+                    "scores_total": scores_total,
+                    "outcome": winners[0] if len(winners) == 1 else "TIE",
+                }
+            )
+        return json.dumps(result, sort_keys=True, separators=(",", ":"))
+
+    return json.loads(gl.eq_principle.strict_eq(fetch))
 
 
 REQUIRED_LLM_KEYS = {"verdict", "reasoning", "condition_category", "condition_summary"}
@@ -358,7 +474,7 @@ class DaoDelegateMandateGuard(gl.Contract):
         if self._is_mandate_expired_at(mandate, now_dt):
             raise gl.vm.UserError("MANDATE_EXPIRED")
 
-        _validate_https_url(proposal_url, "PROPOSAL_URL")
+        snapshot_space_id, snapshot_proposal_id, canonical_url = _parse_canonical_snapshot_url(proposal_url)
 
         if not isinstance(proposal_title, str) or len(proposal_title.strip()) == 0 or len(proposal_title) > 200:
             raise gl.vm.UserError("PROPOSAL_TITLE_OUT_OF_BOUNDS")
@@ -366,6 +482,11 @@ class DaoDelegateMandateGuard(gl.Contract):
         if not isinstance(proposal_text, str) or len(proposal_text.strip()) == 0 or len(proposal_text) > 12000:
             raise gl.vm.UserError("PROPOSAL_TEXT_OUT_OF_BOUNDS")
 
+        # Caller-supplied title/text are only legacy UI inputs. The stored snapshot
+        # is always the canonical Snapshot record independently fetched by validators.
+        canonical_proposal = _fetch_canonical_snapshot_proposal(snapshot_space_id, snapshot_proposal_id)
+        proposal_title = canonical_proposal["title"]
+        proposal_text = canonical_proposal["body"]
         proposal_hash = hashlib.sha256(proposal_text.encode("utf-8")).hexdigest()
         dedup_key = f"{mandate_id}:{proposal_hash}"
 
@@ -381,8 +502,8 @@ class DaoDelegateMandateGuard(gl.Contract):
             id=capability_id,
             mandate_id=mandate_id,
             mandate_content_hash=mandate.content_hash,
-            proposal_url=proposal_url.strip(),
-            proposal_title=proposal_title.strip(),
+            proposal_url=canonical_url,
+            proposal_title=proposal_title,
             proposal_text=proposal_text,
             proposal_hash=proposal_hash,
             status="PENDING",
@@ -560,7 +681,7 @@ class DaoDelegateMandateGuard(gl.Contract):
         )
 
     @gl.public.write
-    def use_capability(self, capability_id: u256, use_note: str) -> None:
+    def use_capability(self, capability_id: u256) -> None:
         sender = gl.message.sender_address
         capability = self._get_capability_or_revert(capability_id)
         mandate = self._get_mandate_or_revert(capability.mandate_id)
@@ -581,8 +702,18 @@ class DaoDelegateMandateGuard(gl.Contract):
         if len(capability.intent_text.strip()) == 0:
             raise gl.vm.UserError("INTENT_NOT_RECORDED")
 
-        if not isinstance(use_note, str) or len(use_note.strip()) == 0 or len(use_note) > 1000:
-            raise gl.vm.UserError("USE_NOTE_OUT_OF_BOUNDS")
+        snapshot_space_id, snapshot_proposal_id, _ = _parse_canonical_snapshot_url(capability.proposal_url)
+        final_proposal = _fetch_canonical_snapshot_proposal(
+            snapshot_space_id,
+            snapshot_proposal_id,
+            final=True,
+        )
+        outcome = final_proposal["outcome"]
+        scores_total = final_proposal["scores_total"]
+        use_note = (
+            f"Verified Snapshot governance action: proposal={snapshot_proposal_id}; "
+            f"state=closed; outcome={outcome}; scores_total={scores_total}"
+        )
 
         now_iso = now_dt.isoformat()
 

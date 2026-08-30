@@ -7,6 +7,9 @@ from gltest.direct import VMContext
 
 
 CONTRACT_PATH = Path(__file__).resolve().parents[2] / "contracts" / "dao_delegate_mandate_guard.py"
+CANONICAL_PROPOSAL_URL = "https://snapshot.org/#/capncompany.eth/proposal/0x79598415badd9cd9b9285d313399421f7a04a99be7183dd8a6b1b308ab3e2c5b"
+CANONICAL_PROPOSAL_TITLE = "CIP-13: Encumbered"
+CANONICAL_PROPOSAL_TEXT = "Canonical Snapshot body used by the direct contract tests."
 
 
 def to_hex_addr(addr: bytes | str) -> str:
@@ -112,6 +115,27 @@ def test_create_mandate_validation_errors(direct_vm, direct_deploy, direct_owner
         contract.create_mandate(direct_alice, "https://example.com", "Policy", "", "not-a-date")
 
 
+def test_submit_requires_canonical_snapshot_url(direct_vm, direct_deploy, direct_alice):
+    contract = direct_deploy(CONTRACT_PATH)
+    expiry = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+    mandate_id = contract.create_mandate(
+        direct_alice,
+        "https://dao.example.com/mandate",
+        "Vote on infrastructure.",
+        "",
+        expiry,
+    )
+
+    with direct_vm.prank(direct_alice):
+        with direct_vm.expect_revert("PROPOSAL_URL_MUST_BE_CANONICAL_SNAPSHOT"):
+            contract.submit_proposal(
+                mandate_id,
+                "https://dao.example.com/prop/12",
+                "Caller title",
+                "Caller text",
+            )
+
+
 def test_submit_proposal_authorization_and_deduplication(direct_vm, direct_deploy, direct_owner, direct_alice, direct_bob):
     contract = direct_deploy(CONTRACT_PATH)
     expiry = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
@@ -124,7 +148,7 @@ def test_submit_proposal_authorization_and_deduplication(direct_vm, direct_deplo
         expiry,
     )
 
-    proposal_url = "https://dao.example.com/prop/12"
+    proposal_url = CANONICAL_PROPOSAL_URL
     proposal_title = "Patch reentrancy vulnerability in Vault"
     proposal_text = "This proposal fixes a critical reentrancy bug in Vault.sol without moving treasury funds."
 
@@ -145,11 +169,12 @@ def test_submit_proposal_authorization_and_deduplication(direct_vm, direct_deplo
     assert contract.get_capability_count() == 1
 
     cap_data = json.loads(contract.get_capability(cap_id))
-    expected_prop_hash = hashlib.sha256(proposal_text.encode("utf-8")).hexdigest()
+    expected_prop_hash = hashlib.sha256(CANONICAL_PROPOSAL_TEXT.encode("utf-8")).hexdigest()
     assert cap_data["id"] == 0
     assert cap_data["mandate_id"] == 0
     assert cap_data["proposal_url"] == proposal_url
-    assert cap_data["proposal_title"] == proposal_title
+    assert cap_data["proposal_title"] == CANONICAL_PROPOSAL_TITLE
+    assert cap_data["proposal_text"] == CANONICAL_PROPOSAL_TEXT
     assert cap_data["proposal_hash"] == expected_prop_hash
     assert cap_data["status"] == "PENDING"
 
@@ -158,11 +183,66 @@ def test_submit_proposal_authorization_and_deduplication(direct_vm, direct_deplo
         with direct_vm.expect_revert("DUPLICATE_PROPOSAL_SNAPSHOT"):
             contract.submit_proposal(mandate_id, proposal_url, proposal_title, proposal_text)
 
-    # Submitting a revised proposal with different text succeeds
+    # Caller-supplied text cannot create a second snapshot capability.
     revised_text = proposal_text + " Addendum: peer reviewed."
     with direct_vm.prank(direct_alice):
-        cap_id2 = contract.submit_proposal(mandate_id, proposal_url, proposal_title, revised_text)
-        assert cap_id2 == 1
+        with direct_vm.expect_revert("DUPLICATE_PROPOSAL_SNAPSHOT"):
+            contract.submit_proposal(mandate_id, proposal_url, proposal_title, revised_text)
+
+
+def test_use_requires_final_canonical_governance_action(direct_vm, direct_deploy, direct_alice):
+    contract = direct_deploy(CONTRACT_PATH)
+    expiry = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+    mandate_id = contract.create_mandate(
+        direct_alice,
+        "https://dao.example.com/mandate",
+        "Vote on infrastructure.",
+        "",
+        expiry,
+    )
+    with direct_vm.prank(direct_alice):
+        cap_id = contract.submit_proposal(
+            mandate_id,
+            CANONICAL_PROPOSAL_URL,
+            "Caller-controlled title",
+            "Caller-controlled body",
+        )
+
+    direct_vm.mock_llm(".*", json.dumps({
+        "verdict": "WITHIN_MANDATE",
+        "reasoning": "The canonical proposal is within scope.",
+        "condition_category": "",
+        "condition_summary": "",
+    }))
+    with direct_vm.prank(direct_alice):
+        contract.evaluate_capability(cap_id)
+        contract.record_intent(cap_id, "I intend to vote on the canonical proposal.")
+
+    active_payload = {
+        "data": {"proposal": {
+            "id": "0x79598415badd9cd9b9285d313399421f7a04a99be7183dd8a6b1b308ab3e2c5b",
+            "title": CANONICAL_PROPOSAL_TITLE,
+            "body": CANONICAL_PROPOSAL_TEXT,
+            "space": {"id": "capncompany.eth"},
+            "choices": ["Add the Encumbered Debuff", "Reject"],
+            "start": 1787889215,
+            "end": 1788062015,
+            "state": "active",
+            "scores": [1, 0],
+            "scores_total": 1,
+        }}
+    }
+    direct_vm.clear_mocks()
+    import re
+    direct_vm.mock_web(
+        re.escape("https://hub.snapshot.org/graphql"),
+        {"method": "POST", "status": 200, "body": json.dumps(active_payload)},
+    )
+    with direct_vm.prank(direct_alice):
+        with direct_vm.expect_revert("GOVERNANCE_ACTION_NOT_FINAL"):
+            contract.use_capability(cap_id)
+
+    assert json.loads(contract.get_capability(cap_id))["status"] == "GRANTED"
 
 
 def test_evaluate_capability_within_mandate(direct_vm, direct_deploy, direct_owner, direct_alice):
@@ -180,7 +260,7 @@ def test_evaluate_capability_within_mandate(direct_vm, direct_deploy, direct_own
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/1",
+            CANONICAL_PROPOSAL_URL,
             "Security Fix 1",
             "Implement reentrancy lock on Vault.",
         )
@@ -223,7 +303,7 @@ def test_evaluate_capability_conditional(direct_vm, direct_deploy, direct_owner,
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/2",
+            CANONICAL_PROPOSAL_URL,
             "Tooling Grant",
             "Requesting 40k grant for IDE plugin.",
         )
@@ -265,7 +345,7 @@ def test_evaluate_capability_outside_mandate(direct_vm, direct_deploy, direct_ow
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/3",
+            CANONICAL_PROPOSAL_URL,
             "Treasury Sale",
             "Sell 1M DAO tokens for stables.",
         )
@@ -305,7 +385,7 @@ def test_evaluate_capability_ambiguous(direct_vm, direct_deploy, direct_owner, d
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/4",
+            CANONICAL_PROPOSAL_URL,
             "Vague Proposal",
             "Initiate a strategic partnership initiative with unspecified parameters.",
         )
@@ -345,7 +425,7 @@ def test_validator_rejects_semantic_forgery(direct_vm, direct_deploy, direct_own
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/5",
+            CANONICAL_PROPOSAL_URL,
             "Funding Request",
             "Requesting grant funding.",
         )
@@ -392,7 +472,7 @@ def test_validator_rejects_condition_category_divergence(direct_vm, direct_deplo
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/6",
+            CANONICAL_PROPOSAL_URL,
             "Tooling Dev",
             "Develop tooling.",
         )
@@ -439,7 +519,7 @@ def test_conditional_acknowledgement_and_use_flow(direct_vm, direct_deploy, dire
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/7",
+            CANONICAL_PROPOSAL_URL,
             "Marketing Campaign",
             "Launch Q3 social campaign.",
         )
@@ -459,7 +539,7 @@ def test_conditional_acknowledgement_and_use_flow(direct_vm, direct_deploy, dire
     # Attempt to use before recording intent -> fails
     with direct_vm.prank(direct_alice):
         with direct_vm.expect_revert("INTENT_NOT_RECORDED"):
-            contract.use_capability(cap_id, "Voting YES on snapshot.")
+            contract.use_capability(cap_id)
 
     # Record intent WITHOUT acknowledging REPORTING_REQUIRED -> fails
     with direct_vm.prank(direct_alice):
@@ -475,16 +555,16 @@ def test_conditional_acknowledgement_and_use_flow(direct_vm, direct_deploy, dire
 
     # Now use capability -> succeeds
     with direct_vm.prank(direct_alice):
-        contract.use_capability(cap_id, "Vote cast YES on snapshot id 0x123abc.")
+        contract.use_capability(cap_id)
 
     cap_data = json.loads(contract.get_capability(cap_id))
     assert cap_data["status"] == "USED"
-    assert cap_data["use_note"] == "Vote cast YES on snapshot id 0x123abc."
+    assert cap_data["use_note"].startswith("Verified Snapshot governance action: proposal=")
 
     # Cannot reuse a USED capability
     with direct_vm.prank(direct_alice):
         with direct_vm.expect_revert("CANNOT_USE_CAPABILITY_IN_STATE: USED"):
-            contract.use_capability(cap_id, "Attempt second use.")
+            contract.use_capability(cap_id)
 
 
 def test_expiry_blocks_submit_evaluate_and_use(direct_vm, direct_deploy, direct_owner, direct_alice):
@@ -505,7 +585,7 @@ def test_expiry_blocks_submit_evaluate_and_use(direct_vm, direct_deploy, direct_
     with direct_vm.prank(direct_alice):
         cap_id_granted = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/8a",
+            CANONICAL_PROPOSAL_URL,
             "Prop 8a",
             "Prop 8a text.",
         )
@@ -525,11 +605,18 @@ def test_expiry_blocks_submit_evaluate_and_use(direct_vm, direct_deploy, direct_
     cap_data_pre = json.loads(contract.get_capability(cap_id_granted))
     assert cap_data_pre["status"] == "GRANTED"
 
-    # 2. Create capability 2 before expiry, leave it PENDING
+    # 2. Create a second mandate and leave its capability PENDING
+    mandate_pending = contract.create_mandate(
+        direct_alice,
+        "https://dao.example.com/mandate-pending",
+        "Pending mandate",
+        "",
+        expiry,
+    )
     with direct_vm.prank(direct_alice):
         cap_id_pending = contract.submit_proposal(
-            mandate_id,
-            "https://dao.example.com/prop/8b",
+            mandate_pending,
+            CANONICAL_PROPOSAL_URL,
             "Prop 8b",
             "Prop 8b text.",
         )
@@ -558,7 +645,7 @@ def test_expiry_blocks_submit_evaluate_and_use(direct_vm, direct_deploy, direct_
     # use_capability on granted capability after expiry reverts with MANDATE_EXPIRED
     with direct_vm.prank(direct_alice):
         with direct_vm.expect_revert("MANDATE_EXPIRED"):
-            contract.use_capability(cap_id_granted, "Attempting use after expiry")
+            contract.use_capability(cap_id_granted)
 
     # Authoritative capability readback remains effectively EXPIRED with empty use_note and used_at
     cap_granted_after_attempt = json.loads(contract.get_capability(cap_id_granted))
@@ -595,7 +682,7 @@ def test_revocation_before_use_denies_capability(direct_vm, direct_deploy, direc
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/9",
+            CANONICAL_PROPOSAL_URL,
             "Prop 9",
             "Prop 9 text.",
         )
@@ -626,7 +713,7 @@ def test_revocation_before_use_denies_capability(direct_vm, direct_deploy, direc
     # Delegate cannot use capability under revoked mandate
     with direct_vm.prank(direct_alice):
         with direct_vm.expect_revert("MANDATE_NOT_ACTIVE"):
-            contract.use_capability(cap_id, "Attempting use.")
+            contract.use_capability(cap_id)
 
     # Cannot revoke already revoked mandate
     with direct_vm.expect_revert("MANDATE_ALREADY_REVOKED"):
@@ -648,7 +735,7 @@ def test_revocation_after_use_preserves_used_history(direct_vm, direct_deploy, d
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/10",
+            CANONICAL_PROPOSAL_URL,
             "Prop 10",
             "Prop 10 text.",
         )
@@ -664,7 +751,7 @@ def test_revocation_after_use_preserves_used_history(direct_vm, direct_deploy, d
     with direct_vm.prank(direct_alice):
         contract.evaluate_capability(cap_id)
         contract.record_intent(cap_id, "Intent.")
-        contract.use_capability(cap_id, "Used successfully.")
+        contract.use_capability(cap_id)
 
     # Owner revokes mandate after capability has already been USED
     contract.revoke_mandate(mandate_id, "Post-use revocation.")
@@ -672,7 +759,7 @@ def test_revocation_after_use_preserves_used_history(direct_vm, direct_deploy, d
     # Used capability status remains immutably USED
     cap_data = json.loads(contract.get_capability(cap_id))
     assert cap_data["status"] == "USED"
-    assert cap_data["use_note"] == "Used successfully."
+    assert cap_data["use_note"].startswith("Verified Snapshot governance action: proposal=")
 
 
 def test_audit_trail_order_and_immutability(direct_vm, direct_deploy, direct_owner, direct_alice):
@@ -692,7 +779,7 @@ def test_audit_trail_order_and_immutability(direct_vm, direct_deploy, direct_own
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop/11",
+            CANONICAL_PROPOSAL_URL,
             "Prop 11",
             "Prop 11 text.",
         )
@@ -714,7 +801,7 @@ def test_audit_trail_order_and_immutability(direct_vm, direct_deploy, direct_own
 
     # Step 5: use_capability (audit 4)
     with direct_vm.prank(direct_alice):
-        contract.use_capability(cap_id, "Vote executed.")
+        contract.use_capability(cap_id)
 
     # Step 6: revoke_mandate (audit 5)
     contract.revoke_mandate(mandate_id, "Closing mandate.")
@@ -843,7 +930,7 @@ def test_wrong_ids_and_invalid_transitions_fail_without_state_drift(direct_vm, d
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop",
+            CANONICAL_PROPOSAL_URL,
             "Title",
             "Text",
         )
@@ -882,7 +969,7 @@ def test_wrong_ids_and_invalid_transitions_fail_without_state_drift(direct_vm, d
     # Using invalid capability ID reverts
     with direct_vm.prank(direct_alice):
         with direct_vm.expect_revert("CAPABILITY_NOT_FOUND"):
-            contract.use_capability(999, "Note")
+            contract.use_capability(999)
 
     # Recording intent on PENDING capability reverts
     with direct_vm.prank(direct_alice):
@@ -892,7 +979,7 @@ def test_wrong_ids_and_invalid_transitions_fail_without_state_drift(direct_vm, d
     # Using PENDING capability reverts
     with direct_vm.prank(direct_alice):
         with direct_vm.expect_revert("CANNOT_USE_CAPABILITY_IN_STATE: PENDING"):
-            contract.use_capability(cap_id, "Premature use")
+            contract.use_capability(cap_id)
 
     # Verify no state drift occurred
     assert contract.get_audit_count() == initial_audit_count
@@ -915,7 +1002,7 @@ def test_nondet_failure_rollback_and_retry_preserves_pending(direct_vm, direct_d
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop",
+            CANONICAL_PROPOSAL_URL,
             "Title",
             "Text",
         )
@@ -968,7 +1055,7 @@ def test_llm_response_schema_validation_rejections(direct_vm, direct_deploy, dir
     with direct_vm.prank(direct_alice):
         cap_id = contract.submit_proposal(
             mandate_id,
-            "https://dao.example.com/prop",
+            CANONICAL_PROPOSAL_URL,
             "Title",
             "Text",
         )

@@ -18,10 +18,10 @@ export const ProposalEvaluator: React.FC<ProposalEvaluatorProps> = ({
     useWallet();
 
   const [mandateId, setMandateId] = useState(initialMandateId);
-  const [proposalUrl, setProposalUrl] = useState('https://snapshot.org/#/dao.eth/proposal/0x9876');
-  const [proposalTitle, setProposalTitle] = useState('Security Bug Bounty Program - Q3 Funding');
+  const [proposalUrl, setProposalUrl] = useState('https://snapshot.org/#/capncompany.eth/proposal/0x79598415badd9cd9b9285d313399421f7a04a99be7183dd8a6b1b308ab3e2c5b');
+  const [proposalTitle, setProposalTitle] = useState('CIP-13: Encumbered');
   const [proposalText, setProposalText] = useState(
-    'Allocate $45,000 from the community treasury to fund the Q3 smart contract bug bounty program on Immunefi.'
+    'The contract fetches and pins the canonical Snapshot proposal body before AI evaluation.'
   );
 
   const [evalCapabilityId, setEvalCapabilityId] = useState('');
@@ -32,16 +32,16 @@ export const ProposalEvaluator: React.FC<ProposalEvaluatorProps> = ({
   // Preset Proposals
   const loadPreset = (type: 'compliant' | 'violation') => {
     if (type === 'compliant') {
-      setProposalTitle('Security Bug Bounty Program - Q3 Funding');
-      setProposalUrl('https://snapshot.org/#/dao.eth/proposal/0x9876');
+      setProposalTitle('CIP-13: Encumbered');
+      setProposalUrl('https://snapshot.org/#/capncompany.eth/proposal/0x79598415badd9cd9b9285d313399421f7a04a99be7183dd8a6b1b308ab3e2c5b');
       setProposalText(
-        'Allocate $45,000 from the community treasury to fund the Q3 smart contract bug bounty program on Immunefi.'
+        'Canonical Snapshot content is fetched by GenLayer validators and pinned before AI evaluation.'
       );
     } else {
-      setProposalTitle('Emergency Collateralization Ratio Reduction');
-      setProposalUrl('https://snapshot.org/#/dao.eth/proposal/0x5432');
+      setProposalTitle('Do you agree to pay $800 for Snapshot Pro for June?');
+      setProposalUrl('https://snapshot.org/#/robots.0cf5e.eth/proposal/0xfa282f41300aa3a197aa32c25b2edc5e90a2cb211024b7267315d23a4ee38bfd');
       setProposalText(
-        'Reduce the global protocol minimum collateralization ratio from 150% to 110% to boost liquidity utilization.'
+        'Canonical Snapshot content is fetched by GenLayer validators; this field is not trusted.'
       );
     }
   };
@@ -152,7 +152,7 @@ export const ProposalEvaluator: React.FC<ProposalEvaluatorProps> = ({
               Proposal Evaluator & Submission
             </h2>
             <p className="panel-subtitle">
-              Submit a DAO proposal against an active mandate and trigger GenLayer intelligent consensus.
+              Submit a canonical Snapshot proposal; GenLayer fetches and pins its title/body before intelligent consensus.
             </p>
           </div>
         </div>
@@ -220,7 +220,7 @@ export const ProposalEvaluator: React.FC<ProposalEvaluatorProps> = ({
             id="input-proposal-url"
             type="text"
             className="form-input font-mono"
-            placeholder="https://snapshot.org/#/dao.eth/proposal/..."
+            placeholder="https://snapshot.org/#/space.eth/proposal/0x..."
             value={proposalUrl}
             onChange={(e) => setProposalUrl(e.target.value)}
             required
@@ -236,7 +236,7 @@ export const ProposalEvaluator: React.FC<ProposalEvaluatorProps> = ({
             id="input-proposal-text"
             className="form-textarea"
             rows={4}
-            placeholder="Paste full text of the proposal to evaluate against delegate mandate and exclusions..."
+            placeholder="Optional display text; canonical Snapshot body is fetched and stored by the contract."
             value={proposalText}
             onChange={(e) => setProposalText(e.target.value)}
             required
