@@ -779,4 +779,41 @@ describe('Wallet Matrix: Chooser Accessibility & Modal Behavior', () => {
     expect(dialog.getAttribute('aria-modal')).toBe('true');
     expect(dialog.getAttribute('aria-labelledby')).toBe('wallet-chooser-title');
   });
+
+  it('shows human-facing wallet names without provider implementation identifiers', async () => {
+    const mm = createMockProvider();
+    const okx = createMockProvider();
+
+    render(
+      <WalletProvider>
+        <AccessibleApp />
+      </WalletProvider>
+    );
+
+    act(() => {
+      window.dispatchEvent(
+        new CustomEvent('eip6963:announceProvider', {
+          detail: {
+            info: { uuid: 'mm-ui', name: 'MetaMask', icon: '', rdns: 'io.metamask' },
+            provider: mm.provider,
+          },
+        })
+      );
+      window.dispatchEvent(
+        new CustomEvent('eip6963:announceProvider', {
+          detail: {
+            info: { uuid: 'okx-ui', name: 'OKX Wallet', icon: '', rdns: 'com.okex.wallet' },
+            provider: okx.provider,
+          },
+        })
+      );
+    });
+
+    await user.click(screen.getByTestId('connect-trigger'));
+
+    expect(screen.getByText('MetaMask')).toBeDefined();
+    expect(screen.getByText('OKX Wallet')).toBeDefined();
+    expect(screen.queryByText('io.metamask')).toBeNull();
+    expect(screen.queryByText('com.okex.wallet')).toBeNull();
+  });
 });

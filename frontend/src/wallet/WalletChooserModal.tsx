@@ -168,9 +168,6 @@ export const WalletChooserModal: React.FC<WalletChooserModalProps> = ({ triggerR
                     )}
                     <div className="wallet-info">
                       <span className="wallet-name">{wallet.name}</span>
-                      <span className="wallet-rdns text-muted text-xs">
-                        {wallet.isFallback ? 'Injected fallback' : wallet.rdns}
-                      </span>
                     </div>
                   </div>
                   {isConnecting && (
