@@ -82,7 +82,7 @@
   "required_local_verification": {
     "contract_direct_tests": "20 passed",
     "genvm_lint": "PASS",
-    "frontend_tests": "4 files; 92 passed",
+    "frontend_tests": "4 files; 93 passed",
     "frontend_build": "PASS",
     "production_dependency_audit": "no known vulnerabilities",
     "exact_source_schema_probe": "PASS: 12 methods; 6 views; 6 writes; 0 constructor parameters; see PRE_DEPLOY_SCHEMA_PROBE.json",
