@@ -159,10 +159,14 @@ def _fetch_canonical_snapshot_proposal(space_id: str, proposal_id: str, final: b
         response = gl.nondet.web.request(
             SNAPSHOT_GRAPHQL_URL,
             method="POST",
-            body={
-                "query": SNAPSHOT_PROPOSAL_QUERY,
-                "variables": {"id": proposal_id},
-            },
+            body=json.dumps(
+                {
+                    "query": SNAPSHOT_PROPOSAL_QUERY,
+                    "variables": {"id": proposal_id},
+                },
+                separators=(",", ":"),
+            ),
+            headers={"Content-Type": "application/json"},
         )
         payload = _snapshot_json_body(response)
         proposal = payload.get("data", {}).get("proposal")

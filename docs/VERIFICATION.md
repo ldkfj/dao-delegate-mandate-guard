@@ -12,12 +12,12 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 | Submission category | `PROJECT` |
 | Exact Git revision | resolved from `git rev-parse HEAD` in the review package |
 | Source status | corrected; fresh PRE_DEPLOY review required |
-| Contract source SHA-256 (canonical LF) | `EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A` |
+| Contract source SHA-256 (canonical LF) | `C1437B81D6AFA43F616EFD2C280A2B78E8AB833C1B6AE58230EBF1437EF911F0` |
 | Network | GenLayer Studionet, chain `61999` / `0xF22F` |
 | Contract classification | `INTENTIONALLY_FROZEN` |
 | Constructor arguments | none |
 | Locked Studio account | `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902` (`deployer`; selected and accessible read-only) |
-| Contract / deployment transaction | pending fresh deployment |
+| Contract / deployment transaction | pending fresh deployment after runtime request-body correction |
 | Vercel release | pending corrected source release |
 
 ## Judge-requested correction
@@ -26,6 +26,10 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 - Each validator independently fetches the proposal from Snapshot GraphQL inside `gl.eq_principle.strict_eq` and the contract stores the returned identity, title, body, and SHA-256 hash. Browser-supplied title/body values are not authoritative.
 - `use_capability` no longer accepts a free-form execution note. It independently re-fetches the same proposal and requires `state=closed`, valid final scores, and a non-zero `scores_total`; the stored proof is deterministically generated from that canonical result.
 - The MVP remains a mandate guard and audit record. It does not broadcast an external DAO vote.
+
+## Studio runtime correction
+
+The first fresh instance was intentionally not retained as release evidence. Its `submit_proposal` call finalized with `SystemError: 2: invalid` because the Studio GenVM runner accepts only `str` or `bytes` for `gl.nondet.web.request` bodies, while the initial corrected source passed a Python dictionary. The source now JSON-encodes the GraphQL body and sends the explicit JSON content type. The failed instance, address, transaction, and evidence are not reused; this source change requires a fresh PRE_DEPLOY review and fresh deployment.
 
 ## Reproducible local checks
 
@@ -53,8 +57,8 @@ Canonicalization is UTF-8 bytes from the raw Git blob with CRLF and lone CR conv
 
 The old deployment and old Vercel transaction ledger must not be reused for this source revision. The fresh evidence package must bind the same exact source hash and final Git revision to:
 
-1. Anonymous `PRE_DEPLOY` `APPROVED`.
-2. Fresh Studionet deployment with empty constructor arguments, `FINALIZED`, execution `SUCCESS`, source parity, and authoritative readback.
+1. Anonymous `PRE_DEPLOY` `APPROVED` for the source package used for deployment.
+2. Fresh Studionet deployment with empty constructor arguments, `FINALIZED`, execution `SUCCESS`, source parity, and authoritative readback. The prior failed instance is excluded because this source package changed afterward.
 3. Primary-AI Studio matrix covering canonical submit, canonical readback, AI grant/deny, intent, closed-proposal proof use, non-final governance-action rejection, authorization failure, and owner revocation.
 4. Anonymous `POST_DEPLOY_TEST` `APPROVED`.
 5. Public GitHub commit and Vercel release built from that exact revision.

@@ -3,7 +3,7 @@
   "revision": "RESOLVED_FROM_GIT_HEAD",
   "revision_resolution_command": "git rev-parse HEAD",
   "contract_source_path": "contracts/dao_delegate_mandate_guard.py",
-  "contract_source_sha256_canonical_lf_utf8": "EB71FDBD9BB1E07B02DF69E1DC1AD724E24AE9C361A376DE1FBB11C407622B7A",
+  "contract_source_sha256_canonical_lf_utf8": "C1437B81D6AFA43F616EFD2C280A2B78E8AB833C1B6AE58230EBF1437EF911F0",
   "probe_command": "genvm-lint check contracts/dao_delegate_mandate_guard.py --json",
   "probe_result": {
     "ok": true,
