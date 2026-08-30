@@ -127,4 +127,9 @@ If Studionet or local Studio state is reset, redeploy the same reviewed source a
 - The contract is intentionally frozen. Corrections require a reviewed fresh deployment and address update.
 - AI verdict quality depends on the clarity of the mandate and proposal text; `AMBIGUOUS` fails closed.
 - The production JavaScript bundle is about 781 kB before gzip (about 186 kB gzip); Vite reports a non-blocking chunk-size warning.
-- Live Vercel E2E for the corrected contract is pending the public release and final user-run verification.
+- Production Vercel release: https://dao-delegate-mandate-guard.vercel.app
+- Read-only live smoke verification passed on the production release: the page shows the reviewed
+  contract `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, Studionet `0xF22F`, the authoritative
+  10-entry audit timeline, and reload-disconnected wallet state.
+- Wallet E2E with OKX is pending because the Codex in-app browser session currently exposes no
+  supported injected wallet provider; no wallet transaction or signature is claimed from that run.

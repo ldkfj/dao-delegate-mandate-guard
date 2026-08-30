@@ -20,7 +20,7 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 | Contract | `0xC500A12309784a75367FC53aCfa54c0F231A26d1` |
 | Deployment transaction | `0xaa725f836c3b7aaee1970a9db889efae979552c7ebcd890a3d3bbcd994684632` (`FINALIZED` / `SUCCESS`) |
 | Deployment creator | `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902` (locked deployer) |
-| Vercel release | pending corrected source release |
+| Vercel release | [production URL](https://dao-delegate-mandate-guard.vercel.app), deployment `dpl_CyXGQ84n8P1DmWw6Q8xzHt4WwACS`, READY |
 
 ## Judge-requested correction
 
@@ -91,6 +91,16 @@ The old deployment and old Vercel transaction ledger must not be reused for this
 5. Public GitHub commit and Vercel release built from that exact revision.
 6. User-executed Vercel E2E with OKX, including wallet isolation/reload-disconnected, canonical proposal binding, final-action proof, negative state, and authoritative readback.
 7. Anonymous `POST_GITHUB_VERCEL_FINAL` `APPROVED` on the same final revision/evidence package.
+
+### Production Vercel smoke evidence
+
+The production alias is [dao-delegate-mandate-guard.vercel.app](https://dao-delegate-mandate-guard.vercel.app)
+and was built from exact revision `93bfe68d6e9fa97ebf66dabbaff4a9cdea1f8c69`. Read-only verification in the
+Codex In-app Browser passed: the header shows contract `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, the
+footer shows Studionet `0xF22F`, the authoritative audit view loads 10 entries, the `CAPABILITY_USED`
+filter isolates the expected entry, and the page remains disconnected after reload. The OKX wallet E2E is
+not claimed: this browser session exposed no supported injected wallet provider, so no wallet signature or
+transaction was performed in this smoke run.
 
 ## Recovery
 

@@ -36,9 +36,27 @@
     "execution": "SUCCESS"
   },
   "live_web": {
-    "status": "NOT_DEPLOYED",
-    "url": "",
-    "vercel_deployment": ""
+    "status": "DEPLOYED",
+    "url": "https://dao-delegate-mandate-guard.vercel.app",
+    "vercel_deployment": "dpl_CyXGQ84n8P1DmWw6Q8xzHt4WwACS",
+    "vercel_inspector_url": "https://vercel.com/gam9/dao-delegate-mandate-guard/CyXGQ84n8P1DmWw6Q8xzHt4WwACS",
+    "deployment_alias_verified": true,
+    "built_from_revision": "93bfe68d6e9fa97ebf66dabbaff4a9cdea1f8c69",
+    "read_only_smoke": {
+      "status": "PASS",
+      "browser": "Codex In-app Browser",
+      "contract_address_visible": "0xC500A12309784a75367FC53aCfa54c0F231A26d1",
+      "chain_visible": "0xF22F",
+      "audit_entries_visible": 10,
+      "audit_filter_verified": "CAPABILITY_USED",
+      "reload_disconnected_verified": true
+    },
+    "wallet_e2e": {
+      "status": "BLOCKED_ENVIRONMENT",
+      "wallet": "OKX Wallet",
+      "reason": "Codex in-app browser exposed no supported injected wallet provider",
+      "signatures_or_transactions_claimed": false
+    }
   },
   "prior_deployment_reuse": false,
   "prior_evidence_reuse": false,
