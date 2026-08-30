@@ -13,7 +13,7 @@ DAO Delegate Mandate Guard turns a human-readable delegation policy into an audi
 ## Current release revision
 
 - Frontend correction commit: `336a65706ecfeec589b479eaa7bbeeb5b8f47bfb`
-- Final release source/package revision: `e7b2d04af93c49f0a2bd7a9f4b08132c9bcb29a7`
+- Final release source/package revision: `99c756c074f2f6b8d937aa14d002bb1b7add0857`
 - Contract source SHA-256 (canonical LF UTF-8): `C1437B81D6AFA43F616EFD2C280A2B78E8AB833C1B6AE58230EBF1437EF911F0`
 - The final evidence-package commit is recorded literally in [docs/VERIFICATION.md](docs/VERIFICATION.md) after release binding is complete.
 
@@ -152,7 +152,7 @@ If Studionet or local Studio state is reset, redeploy the same reviewed source a
 - AI verdict quality depends on the clarity of the mandate and proposal text; `AMBIGUOUS` fails closed.
 - The production JavaScript bundle is about 781 kB before gzip (about 186 kB gzip); Vite reports a non-blocking chunk-size warning.
 - Production Vercel release: https://dao-delegate-mandate-guard.vercel.app
-- Corrected production deployment: `dpl_Eh2xxP9eMkTwhGnrk7GootvgXQrD`
+- Corrected production deployment: `dpl_CHAMagJ8qgckwKAG7rXFuCtN6vmv`
 - Read-only live smoke verification passed on the production release: the page shows the reviewed
   contract `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, Studionet `0xF22F`, the authoritative
   12-entry audit timeline, and reload-disconnected wallet state. The earlier 10-entry observation
