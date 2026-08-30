@@ -11,7 +11,7 @@ The exact-source schema evidence is [PRE_DEPLOY_SCHEMA_PROBE.json](PRE_DEPLOY_SC
 |---|---|
 | Submission category | `PROJECT` |
 | Exact source/frontend correction revision | `336a65706ecfeec589b479eaa7bbeeb5b8f47bfb` |
-| Final evidence-package revision | recorded literally in the Final release binding section |
+| Final release source/package revision | `e7b2d04af93c49f0a2bd7a9f4b08132c9bcb29a7` |
 | Source status | exact reviewed source deployed and live-tested |
 | Contract source SHA-256 (canonical LF) | `C1437B81D6AFA43F616EFD2C280A2B78E8AB833C1B6AE58230EBF1437EF911F0` |
 | Network | GenLayer Studionet, chain `61999` / `0xF22F` |
@@ -75,7 +75,7 @@ The live `use_capability` rejection dialog recorded `FINALIZED`, result `ERROR`,
 The package hash is reproduced from the committed blob, not from a working-tree text conversion:
 
 ```powershell
-py -3.13 -c "import hashlib,subprocess; rev=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(); path='contracts/dao_delegate_mandate_guard.py'; raw=subprocess.check_output(['git','cat-file','blob',f'{rev}:{path}']); canonical=raw.replace(b'\\r\\n',b'\\n').replace(b'\\r',b'\\n'); print('revision='+rev); print(hashlib.sha256(canonical).hexdigest().upper())"
+py -3.13 -c "import hashlib,subprocess; rev='e7b2d04af93c49f0a2bd7a9f4b08132c9bcb29a7'; path='contracts/dao_delegate_mandate_guard.py'; raw=subprocess.check_output(['git','cat-file','blob',f'{rev}:{path}']); canonical=raw.replace(b'\\r\\n',b'\\n').replace(b'\\r',b'\\n'); print('revision='+rev); print(hashlib.sha256(canonical).hexdigest().upper())"
 # C1437B81D6AFA43F616EFD2C280A2B78E8AB833C1B6AE58230EBF1437EF911F0
 ```
 
@@ -111,9 +111,11 @@ Submission recommendation: READY only after fresh final-release evidence and bot
 ## Final release binding
 
 - Previously reviewed final-release commit: `fb77c59a5c3fa10d29beacfa67486fd65d1b80d8`
+- Final release source/package commit: `e7b2d04af93c49f0a2bd7a9f4b08132c9bcb29a7`
 - Source/frontend correction commit: `336a65706ecfeec589b479eaa7bbeeb5b8f47bfb`
-- This correction package is bound to source/frontend commit `336a65706ecfeec589b479eaa7bbeeb5b8f47bfb`; the deployed contract source hash and frontend source tree remain unchanged from that listed correction commit.
-- The prior Vercel deployment `dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6` is superseded for final-release evidence. A fresh corrected deployment must be bound here before final re-review.
+- This correction package is bound to source/package commit `e7b2d04af93c49f0a2bd7a9f4b08132c9bcb29a7`; the deployed contract source hash and frontend source tree remain unchanged from the listed correction commit.
+- Corrected Vercel deployment: `dpl_Eh2xxP9eMkTwhGnrk7GootvgXQrD` ([inspector](https://vercel.com/gam9/dao-delegate-mandate-guard/Eh2xxP9eMkTwhGnrk7GootvgXQrD)); it is READY, production, and aliased to the public URL.
+- The prior Vercel deployment `dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6` is superseded for final-release evidence.
 
 ## Required live evidence before release
 
@@ -130,10 +132,14 @@ The old deployment and old Vercel transaction ledger must not be reused for this
 ### Production Vercel smoke evidence
 
 The production alias is [dao-delegate-mandate-guard.vercel.app](https://dao-delegate-mandate-guard.vercel.app)
-and the prior READY deployment was `dpl_6JpwF61ZKM6LjLEdMaVRYiX58VC6`; it is superseded for final-release evidence. Read-only verification in the
-Codex In-app Browser passed: the header shows contract `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, the
+and the corrected READY deployment is `dpl_Eh2xxP9eMkTwhGnrk7GootvgXQrD`. Read-only verification in
+Google Chrome passed: the header shows contract `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, the
 footer shows Studionet `0xF22F`, the authoritative audit view loads 12 entries, the `CAPABILITY_USED`
 filter isolates the expected entry, and the page remains disconnected after reload.
+
+The corrected wallet chooser visibly shows only human-facing names (`OKX Wallet` and `MetaMask` in the
+inspected session); `io.metamask` and `com.okex.wallet` are absent from rendered chooser text. The
+automated provider matrix still covers the exact supported set including Rabby.
 
 The AI-controlled Chrome E2E owner journey also passed with separate OKX account
 `0x00870443049cb1d4a9a0f51913885433c701e01f`: `create_mandate` hash
