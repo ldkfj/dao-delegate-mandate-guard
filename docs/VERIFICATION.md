@@ -45,10 +45,18 @@ All transactions below are on `0xC500A12309784a75367FC53aCfa54c0F231A26d1`, with
 | AI evaluation | `FINALIZED / SUCCESS` | `0x24b86716dcd772da212374bd7cb9871372b6e84cff50a109dd97f7eb6cc3f259`; verdict `WITHIN_MANDATE` |
 | Delegate records intent | `FINALIZED / SUCCESS` | `0x308b0e13de6290fcc17753e610bf7b98c6e9ec1290de17f749e204468ff5c2f0` |
 | Delegate uses capability | `FINALIZED / SUCCESS` | `0x249beeb9445c87f617ee634096f9554461528dbbfa1ef2fac01a0b2f1ee47336`; canonical state `closed`, outcome `Add the Encumbered Debuff`, scores total `2022061`; readback `USED` |
+| Non-final safety case: owner creates mandate #1 | `FINALIZED / SUCCESS` | `0x8c9646d94d1af03d9781a096669fbf8964907957048bd07cf5a3c72a02791ed`; fresh mandate for active-proposal rejection test |
+| Non-final safety case: delegate submits active Snapshot proposal #1 | `FINALIZED / SUCCESS` | `0xe886ff0c20749a0305b288ef761a9af7fb4932914fa7f6cf22257f13aff4bbda`; active URL `https://snapshot.org/#/myrtles.eth/proposal/0x29fd1d4fc98ce837f21aa0559d9846e907df1a57a3e1b4e0a0f966dc3d3b6025`; browser spoof title/body excluded |
+| Non-final safety case: evaluation and intent | `FINALIZED / SUCCESS` | `0xbb7adc20010dab3179c6d21c9a377e85198b1f6da6b48aec88a04dabea9b13a5` (`WITHIN_MANDATE`), then `0x336cda48d92ec5dd65db9aea3a66669827a3c7529842898cdf7f3c45d22d29f9` (`record_intent`) |
+| Non-final governance-action rejection | `FINALIZED / ERROR` | `0x5c4514eba020165e89865ce320a61209844e14e382641be1c9abddb71494c551`; semantic rollback `GOVERNANCE_ACTION_NOT_FINAL`; active proposal was not used |
 | Unauthorized delegate revoke | `FINALIZED / ERROR` | `0x87b220eb71e304bfe18c549262036ba3920ba2022b509f8e7a49aef909224082`; rollback `UNAUTHORIZED_NOT_OWNER` |
 | Owner revoke | `FINALIZED / SUCCESS` | `0x8018031fc657814e5fd9b7eb50990f2a3dbf9ea0e141bd21602cf12cb84a14f0`; readback `REVOKED` |
 
-Authoritative finalized reads: capability #0 is `USED` with verdict `WITHIN_MANDATE`; `get_audit_count()` returned `8`; audit entry `7` is `CAPABILITY_USED` (`GRANTED` -> `USED`); mandate #0 is `REVOKED` with the owner reason.
+Authoritative finalized reads: capability #0 is `USED` with verdict `WITHIN_MANDATE`; the exact post-submit JSON response is preserved in [studio-capability-0-readback.json](evidence/studio-capability-0-readback.json) and includes the canonical URL, canonical title `CIP-13: Encumbered`, canonical body, `proposal_hash`, `mandate_content_hash`, `status`, and deterministic use proof. The stored title/body are not the browser-supplied spoof values.
+
+The exact post-rejection JSON response for capability #1 is preserved in [studio-capability-1-non-final-readback.json](evidence/studio-capability-1-non-final-readback.json): `status` is `GRANTED`, `verdict` is `WITHIN_MANDATE`, and both `use_note` and `used_at` are empty. This is the authoritative no-state-drift readback after the `GOVERNANCE_ACTION_NOT_FINAL` rollback; `get_audit_count()` returned `10` after the case. A preceding deliberate call before `record_intent` returned `INTENT_NOT_RECORDED`; it is retained only as a diagnostic and is not used as the decisive non-final evidence.
+
+The live `use_capability` rejection dialog recorded `FINALIZED`, result `ERROR`, and the exact rollback payload `GOVERNANCE_ACTION_NOT_FINAL`. Its validator consensus history reached `ACCEPTED` before finalization.
 
 ## Reproducible local checks
 

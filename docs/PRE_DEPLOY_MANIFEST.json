@@ -62,6 +62,11 @@
       "evaluate_capability": {"hash": "0x24b86716dcd772da212374bd7cb9871372b6e84cff50a109dd97f7eb6cc3f259", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78", "verdict": "WITHIN_MANDATE"},
       "record_intent": {"hash": "0x308b0e13de6290fcc17753e610bf7b98c6e9ec1290de17f749e204468ff5c2f0", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78"},
       "use_capability": {"hash": "0x249beeb9445c87f617ee634096f9554461528dbbfa1ef2fac01a0b2f1ee47336", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78", "readback_status": "USED", "proof": "state=closed; outcome=Add the Encumbered Debuff; scores_total=2022061"},
+      "create_mandate_non_final_test": {"hash": "0x8c9646d94d1af03d9781a096669fbf8964907957048bd07cf5a3c72a02791ed", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902", "mandate_id": 1},
+      "submit_proposal_non_final_test": {"hash": "0xe886ff0c20749a0305b288ef761a9af7fb4932914fa7f6cf22257f13aff4bbda", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78", "capability_id": 1, "snapshot_state": "active", "browser_spoof_fields_not_authoritative": true},
+      "evaluate_capability_non_final_test": {"hash": "0xbb7adc20010dab3179c6d21c9a377e85198b1f6da6b48aec88a04dabea9b13a5", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78", "capability_id": 1, "verdict": "WITHIN_MANDATE"},
+      "record_intent_non_final_test": {"hash": "0x336cda48d92ec5dd65db9aea3a66669827a3c7529842898cdf7f3c45d22d29f9", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78", "capability_id": 1},
+      "use_capability_non_final_rejection": {"hash": "0x5c4514eba020165e89865ce320a61209844e14e382641be1c9abddb71494c551", "status": "FINALIZED", "execution": "ERROR", "sender": "0x34b92E6553eaCA11A00A9d86d75d8a7881779D78", "capability_id": 1, "snapshot_state": "active", "semantic_reason": "GOVERNANCE_ACTION_NOT_FINAL", "state_drift": "none; capability remains GRANTED"},
       "unauthorized_revoke": {"hash": "0x87b220eb71e304bfe18c549262036ba3920ba2022b509f8e7a49aef909224082", "status": "FINALIZED", "execution": "ERROR", "reason": "UNAUTHORIZED_NOT_OWNER"},
       "owner_revoke": {"hash": "0x8018031fc657814e5fd9b7eb50990f2a3dbf9ea0e141bd21602cf12cb84a14f0", "status": "FINALIZED", "execution": "SUCCESS", "sender": "0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902", "readback_status": "REVOKED"}
     },
@@ -70,7 +75,12 @@
       "capability_verdict": "WITHIN_MANDATE",
       "audit_count": 8,
       "audit_entry_7": "CAPABILITY_USED; prior_state=GRANTED; new_state=USED",
-      "mandate_status": "REVOKED"
+      "mandate_status": "REVOKED",
+      "capability_0_exact_response_file": "docs/evidence/studio-capability-0-readback.json",
+      "capability_1_non_final_exact_response_file": "docs/evidence/studio-capability-1-non-final-readback.json",
+      "capability_1_non_final_status": "GRANTED",
+      "capability_1_non_final_verdict": "WITHIN_MANDATE",
+      "audit_count_after_non_final_rejection": 10
     }
   },
   "recovery_plan": [

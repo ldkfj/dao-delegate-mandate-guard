@@ -1,0 +1,19 @@
+{
+  "condition_category": "",
+  "condition_summary": "",
+  "created_at": "2026-08-30T13:53:59.297618+00:00",
+  "evaluated_at": "2026-08-30T13:55:21.617557+00:00",
+  "id": 1,
+  "intent_text": "Attempted vote on active Snapshot proposal for non-final safety test.",
+  "mandate_content_hash": "81a5d8dfde8c627f99d556f9d0c5ed879a43ecfd05bb3d5c7de144faad4d4ad2",
+  "mandate_id": 1,
+  "proposal_hash": "54d626e08c1c802b305dad30b7e54a82f102390cc92c7d4db112048935236e9c",
+  "proposal_text": ":)",
+  "proposal_title": "yooo vote please!",
+  "proposal_url": "https://snapshot.org/#/myrtles.eth/proposal/0x29fd1d4fc98ce837f21aa0559d9846e907df1a57a3e1b4e0a0f966dc3d3b6025",
+  "reasoning": "The mandate broadly authorizes voting on any governance proposal. The exclusion applies only if a proposal explicitly bypasses its required governance process. The provided proposal text contains no such indication, thus the exclusion is not triggered and the proposal falls within the mandate.",
+  "status": "GRANTED",
+  "use_note": "",
+  "used_at": "",
+  "verdict": "WITHIN_MANDATE"
+}
